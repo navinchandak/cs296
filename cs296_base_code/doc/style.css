@@ -1,0 +1,40 @@
+.subsection{
+	font-size:1.5em;
+	clear:both;
+	margin-top:5px;
+}
+.section{
+	font-size:2em;
+	background-color:#ffe;
+	clear:both;
+	margin-top:5px;
+}
+.head{
+	text-align:center;
+	background-color:#ddf;
+	color:#fff;
+	font-weight:bold;
+	font-size:1.5em;
+	margin-bottom:20px;
+
+}
+img{
+	float:left;
+	height:350px;
+	margin:2px;
+	margin-right:30px;
+}
+body{
+/*	background-color:#003366;*/
+	margin-left:100px;
+	margin-right:100px;
+	margin-top:10px;
+	margin-bottom:20px;
+	border:1px solid black;
+	padding:2px;
+}
+.top{
+	font-size:0.5em;
+	font-weight:normal;
+}
+

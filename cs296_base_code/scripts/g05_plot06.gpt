@@ -1,0 +1,19 @@
+set autoscale
+unset log
+set title "Frequency plot"
+set term post
+set title "plot05"
+set xlabel " Step time "
+set ylabel " Frequency "
+set term png
+set output "./plots/g05_plot06.png"
+set datafile sep ","
+bin(x,s)=s*int(x/s)
+bwi = 0.005 ;
+set boxwidth bwi*0.8
+set style fill solid 0.4
+set yrange [0:100]
+
+plot './data/lab05_g05_data_temp.csv' u (bin($4,bwi)+bwi/2):(1.0) smooth frequency ti 'frequency' with boxes, \
+ './data/lab05_g05_data_temp.csv' u ($4):(1.0) smooth cumulative  ti 'cumulative' w lines
+

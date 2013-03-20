@@ -1,0 +1,13 @@
+set autoscale
+unset log
+set xtic auto
+set ytic auto
+set title "plot01"
+set xlabel " Iteration Values "
+set ylabel " Average steptime and loop time over reruns"
+set term png
+set output "./plots/g05_plot01.png"
+set datafile sep ","
+
+plot './data/lab05_g05_data.csv' u 2:3 smooth unique w point title "average step time", \
+	'./data/lab05_g05_data.csv' u 2:7 smooth unique w point title "average loop time"
