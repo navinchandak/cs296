@@ -548,7 +548,7 @@ namespace cs296
     	{
     		b2BodyDef bd;
     		b2Body* platform = m_world->CreateBody(&bd);
-    		b2Vec2 vs[44];
+    		b2Vec2 vs[46];
 			vs[0].Set(25.50f, 12.50f);
 			vs[1].Set(20.50f, 5.0f);
 			vs[2].Set(20.25f, 4.75f);
@@ -568,7 +568,9 @@ namespace cs296
 			vs[40].Set(-3.75f, 11.75f);
 			vs[41].Set(-3.85f, 11.70f);
 			vs[42].Set(-3.80f, 11.65f);
-			vs[43].Set(-3.80f, 11.60f);
+			vs[43].Set(-3.76f, 11.60f);
+			vs[44].Set(-3.73f, 11.55f);
+			vs[45].Set(-3.71f, 11.50f);
 			
 			
 			//vs[7].Set(-4.90f, 4.65f);
@@ -590,7 +592,7 @@ namespace cs296
 			//vs[23].Set(-8.20f, 9.15f);
 			
 			b2ChainShape chain;
-			chain.CreateChain(vs, 44);
+			chain.CreateChain(vs, 46);
 			platform->CreateFixture(&chain, 0.0f);
 			
 			
