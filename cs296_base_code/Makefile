@@ -3,6 +3,7 @@
 STATIC_LIB = TRUE
 SLIB_N = libCS296.a
 DLIB_N = libCS296.so
+direct=TRUE
 
 # Programs
 SHELL 	= bash
@@ -17,6 +18,7 @@ DOXYGEN = doxygen
 ######################################
 # Project Name (generate executable with this name)
 TARGET = cs296_exe_05
+TARGETLIB = cs296_exe_05_lib
 GRP_NUM = 05
 
 # Project Paths
@@ -74,27 +76,16 @@ exeoptimized: optimizer exehelper setup compileExe
 optimizer:
 	$(eval CPPFLAGS:=$(CPPFLAGS) -O3)
 
-exedebug: exehelper setup compileExe
-
+exe: exehelper setup compileExe $(BINDIR)/$(TARGET)
 exehelper:
 	$(eval forexe:=$(OBJS))
-
-dummy: exehelper dummy2
-DUMMYVAR = gcc 
-ifeq ($(DUMMYVAR),gcc)
-	forexe=navin
-else
-	forexe=abc
-endif
-
-dummy2: 
-	@echo "the arg" $<
-	@echo "forexe "$(forexe)
+	$(eval direct := TRUE )
 
 exelib: exelibhelper setup compileExeLib
 
 exelibhelper:
 	$(eval LIBS := -lCS296 $(LIBS) )
+	$(eval direct := FALSE )
 
 
 setup:
@@ -108,7 +99,30 @@ compileExeLib: $(LIBDIR)/$(DLIB_N) $(LIBDIR)/$(SLIB_N) $(OBJDIR)/main.o compile
 
 compileExe:$(TEMP) compile
 
-compile: 
+$(BINDIR)/$(TARGET_SLIB): $(OBJS) main.cpp
+	@$(PRINTF) "$(MESG_COLOR)Building executable:$(NO_COLOR) $(FILE_COLOR) %16s$(NO_COLOR)" "$(notdir $@)"
+	@$(CC) -o $(BINDIR)/$(TARGET) $(LDFLAGS) $(CPPFLAGS) $(OBJDIR)/main.o $(forexe) $(LIBS) 2> temp.log || touch temp.err
+	@if test -e temp.err; \
+	then $(PRINTF) $(ERR_FMT) $(ERR_STRING) && $(CAT) temp.log; \
+	elif test -s temp.log; \
+	then $(PRINTF) $(WARN_FMT) $(WARN_STRING) && $(CAT) temp.log; \
+	else $(PRINTF) $(OK_FMT) $(OK_STRING); \
+	fi;
+	@$(RM) -f temp.log temp.err
+
+
+$(BINDIR)/$(TARGET_DLIB): $(OBJS) main.cpp
+	@$(PRINTF) "$(MESG_COLOR)Building executable:$(NO_COLOR) $(FILE_COLOR) %16s$(NO_COLOR)" "$(notdir $@)"
+	@$(CC) -o $(BINDIR)/$(TARGET) $(LDFLAGS) $(CPPFLAGS) $(OBJDIR)/main.o $(forexe) $(LIBS) 2> temp.log || touch temp.err
+	@if test -e temp.err; \
+	then $(PRINTF) $(ERR_FMT) $(ERR_STRING) && $(CAT) temp.log; \
+	elif test -s temp.log; \
+	then $(PRINTF) $(WARN_FMT) $(WARN_STRING) && $(CAT) temp.log; \
+	else $(PRINTF) $(OK_FMT) $(OK_STRING); \
+	fi;
+	@$(RM) -f temp.log temp.err
+
+$(BINDIR)/$(TARGET): $(LIBDIR)/$(DLIB_N) $(LIBDIR)/$(SLIB_N) main.cpp
 	@$(PRINTF) "$(MESG_COLOR)Building executable:$(NO_COLOR) $(FILE_COLOR) %16s$(NO_COLOR)" "$(notdir $@)"
 	@$(CC) -o $(BINDIR)/$(TARGET) $(LDFLAGS) $(CPPFLAGS) $(OBJDIR)/main.o $(forexe) $(LIBS) 2> temp.log || touch temp.err
 	@if test -e temp.err; \
@@ -121,7 +135,8 @@ compile:
 
 -include $(TEMP:.o=.d)
 
-$(TEMP): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+$(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+ifeq($(direct),TRUE)
 	@$(PRINTF) "$(MESG_COLOR)Compiling: $(NO_COLOR) $(FILE_COLOR) %25s$(NO_COLOR)" "$(notdir $<)"
 	@$(CC) $(CPPFLAGS) -c $< -o $@ -MD 2> temp.log || touch temp.err
 	@if test -e temp.err; \
@@ -131,16 +146,21 @@ $(TEMP): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	else printf "${OK_COLOR}%30s\n${NO_COLOR}" "[OK]"; \
 	fi;
 	@$(RM) -f temp.log temp.err
+endif
 
 $(LIBDIR)/$(DLIB_N): $(OBJS)
+ifeq($(direct),false)
 ifneq ($(STATIC_LIB),TRUE)
 	@$(CC) -shared -Wl,-soname,libCS296.so -o $(LIBDIR)/libCS296.so $(OBJS)
 endif
+endif
 	
 $(LIBDIR)/$(SLIB_N) : $(OBJS)
+ifeq($(direct),false)
 ifeq ($(STATIC_LIB),TRUE)
 	@rm -f $@
 	@ar -cq  $@ $(OBJS)
+endif
 endif
 
 $(PROJECT_ROOT)/external/lib/libBox2D.a :
