@@ -1,9 +1,5 @@
 .SUFFIXES: .cpp .hpp
 
-STATIC_LIB = TRUE
-SLIB_N = libCS296.a
-DLIB_N = libCS296.so
-
 # Programs
 SHELL 	= bash
 CC     	= g++
@@ -16,18 +12,15 @@ SED	= sed
 DOXYGEN = doxygen
 ######################################
 # Project Name (generate executable with this name)
-TARGET = cs296_exe_05
-GRP_NUM = 05
+TARGET = cs296_base
 
 # Project Paths
 PROJECT_ROOT=.
 EXTERNAL_ROOT=$(PROJECT_ROOT)/external
 SRCDIR = $(PROJECT_ROOT)/src
-OBJDIR = $(PROJECT_ROOT)/myobjs
-BINDIR = $(PROJECT_ROOT)/mybins
+OBJDIR = $(PROJECT_ROOT)/obj
+BINDIR = $(PROJECT_ROOT)/bin
 DOCDIR = $(PROJECT_ROOT)/doc
-LIBDIR = $(PROJECT_ROOT)/mylibs
-SCPTDIR = $(PROJECT_ROOT)/scripts/
 
 # Library Paths
 BOX2D_ROOT=$(EXTERNAL_ROOT)
@@ -35,12 +28,12 @@ GLUI_ROOT=/usr
 GL_ROOT=/usr
 
 #Libraries
-LIBS := -lBox2D -lglui -lglut -lGLU -lGL 
+LIBS = -lBox2D -lglui -lglut -lGLU -lGL
 
 # Compiler and Linker flags
-CPPFLAGS =-g -Wall -pg  
-CPPFLAGS+=-I $(BOX2D_ROOT)/include -I $(GLUI_ROOT)/include -fPIC 
-LDFLAGS+=-L $(LIBDIR) -L $(BOX2D_ROOT)/lib  -L $(GLUI_ROOT)/lib
+CPPFLAGS =-g -O3 -Wall 
+CPPFLAGS+=-I $(BOX2D_ROOT)/include -I $(GLUI_ROOT)/include
+LDFLAGS+=-L $(BOX2D_ROOT)/lib -L $(GLUI_ROOT)/lib
 
 ######################################
 
@@ -61,56 +54,21 @@ WARN_FMT="${WARN_COLOR}%30s\n${NO_COLOR}"
 
 SRCS := $(wildcard $(SRCDIR)/*.cpp)
 INCS := $(wildcard $(SRCDIR)/*.hpp)
-TEMP := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
-OBJS := $(patsubst $(OBJDIR)/main.o,,$(TEMP))
+OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 
+.PHONY: all setup doc clean distclean
 
-.PHONY: all setup doc clean distclean exe exehelper exelib exelibhelper compile compileExe compileExeLib
-
-all: exeoptimized
-
-exeoptimized: optimizer exehelper setup compileExe
-optimizer:
-	$(eval CPPFLAGS:=$(CPPFLAGS) -O3)
-
-exedebug: exehelper setup compileExe
-
-exehelper:
-	$(eval forexe:=$(OBJS))
-
-dummy: exehelper dummy2
-DUMMYVAR = gcc 
-ifeq ($(DUMMYVAR),gcc)
-	forexe=navin
-else
-	forexe=abc
-endif
-
-dummy2: 
-	@echo "the arg" $<
-	@echo "forexe "$(forexe)
-
-exelib: exelibhelper setup compileExeLib
-
-exelibhelper:
-	$(eval LIBS := -lCS296 $(LIBS) )
-
+all: setup $(BINDIR)/$(TARGET)
 
 setup:
 	@$(ECHO) "Setting up compilation..."
-	@mkdir -p myobjs
-	@mkdir -p mybins
-	@mkdir -p mylibs
+	@mkdir -p obj
+	@mkdir -p bin
 
-
-compileExeLib: $(LIBDIR)/$(DLIB_N) $(LIBDIR)/$(SLIB_N) $(OBJDIR)/main.o compile
-
-compileExe:$(TEMP) compile
-
-compile: 
+$(BINDIR)/$(TARGET): $(OBJS)
 	@$(PRINTF) "$(MESG_COLOR)Building executable:$(NO_COLOR) $(FILE_COLOR) %16s$(NO_COLOR)" "$(notdir $@)"
-	@$(CC) -o $(BINDIR)/$(TARGET) $(LDFLAGS) $(CPPFLAGS) $(OBJDIR)/main.o $(forexe) $(LIBS) 2> temp.log || touch temp.err
+	@$(CC) -o $@ $(LDFLAGS) $(OBJS) $(LIBS) 2> temp.log || touch temp.err
 	@if test -e temp.err; \
 	then $(PRINTF) $(ERR_FMT) $(ERR_STRING) && $(CAT) temp.log; \
 	elif test -s temp.log; \
@@ -119,9 +77,9 @@ compile:
 	fi;
 	@$(RM) -f temp.log temp.err
 
--include $(TEMP:.o=.d)
+-include $(OBJS:.o=.d)
 
-$(TEMP): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+$(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	@$(PRINTF) "$(MESG_COLOR)Compiling: $(NO_COLOR) $(FILE_COLOR) %25s$(NO_COLOR)" "$(notdir $<)"
 	@$(CC) $(CPPFLAGS) -c $< -o $@ -MD 2> temp.log || touch temp.err
 	@if test -e temp.err; \
@@ -132,101 +90,6 @@ $(TEMP): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	fi;
 	@$(RM) -f temp.log temp.err
 
-$(LIBDIR)/$(DLIB_N): $(OBJS)
-ifneq ($(STATIC_LIB),TRUE)
-	@$(CC) -shared -Wl,-soname,libCS296.so -o $(LIBDIR)/libCS296.so $(OBJS)
-endif
-	
-$(LIBDIR)/$(SLIB_N) : $(OBJS)
-ifeq ($(STATIC_LIB),TRUE)
-	@rm -f $@
-	@ar -cq  $@ $(OBJS)
-endif
-
-$(PROJECT_ROOT)/external/lib/libBox2D.a :
-	@cd external/src/; \
-	 tar -xvf Box2D.tgz; \
-	 cd Box2D; \
-	 mkdir build296; \
-	 cd build296; \
-	 cmake ../ && make && make install 
-	
-	
-report:$(PROJECT_ROOT)/external/lib/libBox2D.a all
-	@mkdir -p data
-	@mkdir -p plots
-	@python3 ./scripts/g05_gen_csv.py
-	@python3 ./scripts/g05_gen_plots.py
-	@python3 ./scripts/g05_gen_html.py
-	
-reporttemp:
-	@latex ./doc/g05_prof_report.tex
-	@dvipdf g05_prof_report.dvi $(DOCDIR)/g05_prof_report.pdf 	 
-	@$(RM) g05_prof_report.* 
-
-
-reporttemo:
-	@latex $(DOCDIR)/report_cs296_05.tex 
-	@bibtex report_cs296_05.aux 
-	@latex $(DOCDIR)/report_cs296_05.tex 
-	@latex $(DOCDIR)/report_cs296_05.tex 
-	@dvipdf report_cs296_05.dvi $(DOCDIR)/report_cs296_05.pdf 
-	@$(RM) report_cs296_05.* 
-
-plot01:
-	@mkdir -p data
-	@mkdir -p plots
-	@./scripts/gen_data.sh
-	@./scripts/gen_csv.sh
-	@./scripts/gen_plots.sh
-
-plot02:
-	@mkdir -p data
-	@mkdir -p plots
-	@./scripts/gen_data_csv.sh
-	@./scripts/gen_plots.sh
-plot:
-	@mkdir -p plots
-	@./scripts/gen_plots.sh
-
-release_prof:clean
-	cd external/src/; \
-	 rm -rf Box2D;\
-	 tar -xvf Box2D.tgz; \
-	 cd Box2D; \
-	 mkdir build296; \
-	 cd build296; \
-	 cmake -DCMAKE_BUILD_TYPE=Release ../ && make && make install 
-	@make exeoptimized
-	@$(BINDIR)/$(TARGET) 
-	@gprof $(BINDIR)/$(TARGET) gmon.out > 	g05_release_prof.dat
-
-debug_prof: clean
-	cd external/src/; \
-	 rm -rf Box2D;\
-	 tar -xvf Box2D.tgz; \
-	 cd Box2D; \
-	 mkdir build296; \
-	 cd build296; \
-	 cmake -DCMAKE_BUILD_TYPE=Debug ../ && make && make install 
-	@make exedebug
-	@$(BINDIR)/$(TARGET) 
-	@gprof $(BINDIR)/$(TARGET) gmon.out > 	g05_debug_prof.dat
-
-
-
-Box2D:
-	cd external/src/; \
-	 tar -xvf Box2D.tgz; \
-	 cd Box2D; \
-	 mkdir build296; \
-	 cd build296; \
-	 cmake ../ && make && make install 
-
-removeBox2D:
-	rm -rf external
-	cp -rf ~/ssl/cs296_base_code/external .
-
 doc:
 	@$(ECHO) -n "Generating Doxygen Documentation ...  "
 	@$(RM) -rf doc/html
@@ -235,10 +98,8 @@ doc:
 
 clean:
 	@$(ECHO) -n "Cleaning up..."
-	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~ data plots $(BINDIR) *.dat gmon.out 
-	@$(RM) -rf ./doc/g05_lab09_plot0?.png ./doc/*.html 
+	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~
 	@$(ECHO) "Done"
 
 distclean: clean
-	@$(RM) -rf $(DOCDIR)/html $(LIBDIR) $(DOCDIR)/report_cs296_05.pdf
-
+	@$(RM) -rf $(BINDIR) $(DOCDIR)/html
