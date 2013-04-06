@@ -538,7 +538,7 @@ namespace cs296
     		b2Body* platform = m_world->CreateBody(&bd2);
     		b2Vec2 vs[2];
 			vs[0].Set(20.0f, 13.10f);
-			vs[1].Set(7.50f, 13.10f);			
+			vs[1].Set(3.75f, 13.10f);			
 			b2ChainShape chain;
 			chain.CreateChain(vs, 2);
 			platform->CreateFixture(&chain, 0.0f);
@@ -571,26 +571,7 @@ namespace cs296
 			vs[43].Set(-3.76f, 11.60f);
 			vs[44].Set(-3.73f, 11.55f);
 			vs[45].Set(-3.71f, 11.50f);
-			
-			
-			//vs[7].Set(-4.90f, 4.65f);
-			//vs[8].Set(-5.05f, 4.85f);
-			//vs[9].Set(-5.15f, 5.00f);
-			//vs[10].Set(-5.20f, 5.15f);
-			//vs[11].Set(-8.20f, 9.15f);
-			//vs[12].Set(-8.20f, 9.15f);
-			//vs[13].Set(-8.20f, 9.15f);
-			//vs[14].Set(-8.20f, 9.15f);
-			//vs[15].Set(-8.20f, 9.15f);
-			//vs[16].Set(-8.20f, 9.15f);
-			//vs[17].Set(-8.20f, 9.15f);
-			//vs[18].Set(-8.20f, 9.15f);
-			//vs[19].Set(-8.20f, 9.15f);
-			//vs[20].Set(-8.20f, 9.15f);
-			//vs[21].Set(-8.20f, 9.15f);
-			//vs[22].Set(-8.20f, 9.15f);
-			//vs[23].Set(-8.20f, 9.15f);
-			
+						
 			b2ChainShape chain;
 			chain.CreateChain(vs, 46);
 			platform->CreateFixture(&chain, 0.0f);
@@ -644,7 +625,7 @@ namespace cs296
       		
       		//The plank on top of the wedge
       		b2PolygonShape shape;
-      		shape.SetAsBox(5.0f, 0.15f);
+      		shape.SetAsBox(5.0f, 0.15f, b2Vec2(0.0f,0.0f), 0);
       		b2BodyDef bd2;
       		bd2.position.Set(0.0f, 8.2f);
       		bd2.type = b2_dynamicBody;
@@ -653,8 +634,20 @@ namespace cs296
       		fd2->density = 0.5f;
       		fd2->shape = new b2PolygonShape;
       		fd2->shape = &shape;
-      		body->CreateFixture(fd2);
-			
+      		
+      		b2PolygonShape bs1;
+    	  	b2Vec2 vertices1[4];
+      		vertices1[0].Set(2.0f,0.0f);
+      		vertices1[1].Set(5.0f,0.0f);
+      		vertices1[2].Set(5.0f,3.15f);
+      		vertices1[3].Set(2.0f,4.40f);
+      		b2FixtureDef *fd1 = new b2FixtureDef;
+      		bs1.Set(vertices1, 4);
+    	  	fd1->shape = &bs1;
+    	  	   	  	
+    	  	body->CreateFixture(fd1);			
+    	  	body->CreateFixture(fd2);
+    	  	      		
       		b2RevoluteJointDef jd;
       		b2Vec2 anchor;
       		anchor.Set(0.0f, 8.20f);
@@ -663,145 +656,247 @@ namespace cs296
       		
 		}
 		
-		/*
+		{
+			b2BodyDef bd2;
+    		b2Body* platform = m_world->CreateBody(&bd2);
+    		b2Vec2 vs[2];
+			vs[0].Set(0.0f, 13.10f);
+			vs[1].Set(-7.0f, 13.10f);			
+			b2ChainShape chain;
+			chain.CreateChain(vs, 2);
+			platform->CreateFixture(&chain, 0.0f);
+		}
+		
+		{
+			b2PolygonShape shape1;
+    	  	shape1.SetAsBox(0.15f, 5.0f, b2Vec2(0.0f,0.0f),0);  		
+    	  	b2FixtureDef *fd1 = new b2FixtureDef;
+    		fd1->density = 0.6;
+    		fd1->friction = 0.7;
+    		fd1->restitution = 1.0f;
+    		fd1->shape = &shape1;
+			
+			b2PolygonShape shape2;
+    	  	shape2.SetAsBox(1.0f,0.15f, b2Vec2(0.0f,4.85f),0);  		
+    	  	b2FixtureDef *fd2 = new b2FixtureDef;
+    		fd2->density = 0.6;
+    		fd2->friction = 0.7;
+    		fd2->restitution = 1.0f;
+    		fd2->shape = &shape2;
+
+			b2PolygonShape shape3;
+    		shape3.SetAsBox(0.15f, 0.15f, b2Vec2(0.0f,0.0f),0);
+    		
+    		b2RevoluteJointDef jointDef;
+			
+			b2BodyDef bd;
+	     	bd.type = b2_dynamicBody;
+    	 	bd.position.Set(-8.0f,18.0f);
+    	 	b2Body* plank = m_world->CreateBody(&bd);
+    	 	plank->CreateFixture(fd1);   			
+    	 	plank->CreateFixture(fd2);   			
+    	 	
+    	 	b2BodyDef bd1;
+    		bd1.position.Set(-8.0f,18.0f);
+    	  	b2Body* pivot = m_world->CreateBody(&bd1);
+    		pivot->CreateFixture(&shape3,0.0f);			
+    			
+ 			//jointDef.collideConnected = false;
+ 			jointDef.bodyA = plank;
+    		jointDef.bodyB = pivot;
+    		jointDef.localAnchorA.Set(0.0f,0.0f);
+    		jointDef.localAnchorB.Set(0.0f,0.0f);
+    		m_world->CreateJoint(&jointDef);
+		}
+		
+		{
+			b2Body* platform;
+   	   		b2EdgeShape shape;
+     		shape.Set(b2Vec2(-6.5f,21.5f), b2Vec2(-4.5f,21.5f));
+      		b2BodyDef bd;
+      		platform = m_world->CreateBody(&bd);
+      		platform->CreateFixture(&shape, 0.0f);
+      		
+      		////////////////////////////
+      		
+      		b2BodyDef bd1;
+      		bd1.type = b2_dynamicBody;
+    	 	bd1.position.Set(-5.5f,22.2f);
+      		b2Body* block = m_world->CreateBody(&bd1);
+      		b2PolygonShape square;
+    	  	square.SetAsBox(0.7f,0.7f);  		
+    	  	b2FixtureDef *fd = new b2FixtureDef;
+    		fd->density = 5.80;
+    		fd->friction = 0.0;
+    		fd->restitution = 0.4f;
+    		fd->shape = &square;
+    		block->CreateFixture(fd);
+      		
+		}
+		
+		//The pulley system
+    	{
+    	  	b2BodyDef *bd = new b2BodyDef;
+      		bd->type = b2_dynamicBody;
+      		bd->position.Set(-2,19);
+      		bd->fixedRotation = true;
+      
+      		//The open box
+      		b2FixtureDef *fd1 = new b2FixtureDef;
+      		fd1->density = 8.0;
+      		fd1->friction = 0.5;
+      		fd1->restitution = 0.f;
+      		fd1->shape = new b2PolygonShape;
+      		b2PolygonShape bs1;
+      		bs1.SetAsBox(1.5,0.2, b2Vec2(0.f,-1.4f), 0);
+      		fd1->shape = &bs1;
+      		b2FixtureDef *fd2 = new b2FixtureDef;
+      		fd2->density = 8.0;
+      		fd2->friction = 0.5;
+      		fd2->restitution = 0.f;
+      		fd2->shape = new b2PolygonShape;
+      		b2PolygonShape bs2;
+      		bs2.SetAsBox(0.2,1.5, b2Vec2(1.5f,0.f), 0);
+      		fd2->shape = &bs2;
+     		b2FixtureDef *fd3 = new b2FixtureDef;
+      		fd3->density = 8.0;
+      		fd3->friction = 0.5;
+      		fd3->restitution = 0.f;
+      		fd3->shape = new b2PolygonShape;
+      		b2PolygonShape bs3;
+      		bs3.SetAsBox(0.2,1.5, b2Vec2(-1.5f,0.f), 0);
+      		fd3->shape = &bs3;
+      		 
+      		b2Body* box1 = m_world->CreateBody(bd);
+      		box1->CreateFixture(fd1);
+      		box1->CreateFixture(fd2);
+      		box1->CreateFixture(fd3);
+		
+      		//The bar
+      		b2BodyDef *heavy = new b2BodyDef;
+      		heavy->type = b2_dynamicBody;
+      		heavy->position.Set(20,33);
+      		heavy->fixedRotation = true;
+      		b2FixtureDef *fd4 = new b2FixtureDef;
+      		b2PolygonShape bs4;
+      		bs4.SetAsBox(5.0,0.2);
+      		fd4->shape = &bs4;
+      		fd4->friction = 1.0;
+      		fd4->density = 7.20;	  
+      		b2Body* box2 = m_world->CreateBody(heavy);
+      		box2->CreateFixture(fd4);
+      		
+      		/*//support
+      		b2BodyDef sp;
+    		b2Body* platform = m_world->CreateBody(&sp);
+    		b2Vec2 vs[2];
+			vs[0].Set(20.2f, 32.60f);
+			vs[1].Set(19.8f, 32.60f);			
+			b2ChainShape chain;
+			chain.CreateChain(vs, 2);
+			platform->CreateFixture(&chain, 0.0f);
+      		*/
+
+      		// The pulley joint
+      		b2PulleyJointDef* myjoint = new b2PulleyJointDef();
+      		b2Vec2 worldAnchorOnBody1(-2, 19); // Anchor point on body 1 in world axis
+      		b2Vec2 worldAnchorOnBody2(20, 33); // Anchor point on body 2 in world axis
+      		b2Vec2 worldAnchorGround1(-2, 35); // Anchor point for ground 1 in world axis
+      		b2Vec2 worldAnchorGround2(20, 35); // Anchor point for ground 2 in world axis
+      		float32 ratio = 1.0f; // Define ratio
+      		myjoint->Initialize(box1, box2, worldAnchorGround1, worldAnchorGround2, box1->GetWorldCenter(), box2->GetWorldCenter(), ratio);
+      		m_world->CreateJoint(myjoint);
+    			
+    	
+    		//Smiley
+    	
+    		
+    		b2PolygonShape shape1;
+    	  	shape1.SetAsBox(0.2f, 2.6f, b2Vec2(0.0f,0.0f),0);  		
+    	  	b2FixtureDef *fd = new b2FixtureDef;
+    		fd->density = 2.0;
+    		fd->friction = 1.0;
+    		fd->restitution = 0.6f;
+    		fd->shape = &shape1;
+
+			b2PolygonShape shape2;
+    		shape2.SetAsBox(0.2f, 0.2f, b2Vec2(0.0f,0.0f),0);
+    		
+    		b2RevoluteJointDef jointDef;
+    		
+    		  	
+    		for(int i=0;i<2;i++)		
+    		{
+    	  		
+    			b2BodyDef bd;
+	     		bd.type = b2_dynamicBody;
+    	  		bd.position.Set(16.0 + 8*i,31);
+    	  		bd.angle = pow(-1,i%2)*0.7;
+    	  		b2Body* plank = m_world->CreateBody(&bd);
+    	  		plank->CreateFixture(fd);   			
+    	  		
+    	  		b2BodyDef bd1;
+    			bd1.position.Set(16.0 + 8*i,31);
+    	  		b2Body* pivot = m_world->CreateBody(&bd1);
+    			pivot->CreateFixture(&shape2,0.0f);			
+    			
+ 				//jointDef.collideConnected = false;
+ 				jointDef.bodyA = plank;
+    			jointDef.bodyB = pivot;
+    			jointDef.localAnchorA.Set(0.0f,0.0f);
+    			jointDef.localAnchorB.Set(0.0f,0.0f);
+    		  	m_world->CreateJoint(&jointDef);  
+    		}
+    	}
+    		
+    	{
+    		b2PolygonShape shape;
+      		shape.SetAsBox(2.85f, 0.2f);
+	
+      		b2FixtureDef fd;
+      		fd.shape = &shape;
+      		fd.density = 0.10f;
+      		fd.friction = 1.0f;
+		
+      		b2BodyDef bd;
+	  		bd.type = b2_dynamicBody;
+	  		bd.position.Set(20,30);
+	  		b2Body* body = m_world->CreateBody(&bd);
+	  		body->CreateFixture(&fd);   		  	
+    	
+		}
+		
+		//Lips
+		{	
+			b2BodyDef bd;
+    		b2Body* platform = m_world->CreateBody(&bd);
+    		b2Vec2 vs[2];
+			vs[0].Set(22.7f, 16.0f);
+			vs[1].Set(28.0f, 18.0f);
+			
+			b2ChainShape chain;
+			chain.CreateChain(vs, 2);
+			platform->CreateFixture(&chain, 0.0f);		
+			
+		}
+		
+		{	
+			b2BodyDef bd;
+    		b2Body* platform = m_world->CreateBody(&bd);
+    		b2Vec2 vs[2];
+			vs[0].Set(17.3f, 16.0f);
+			vs[1].Set(12.0f, 18.0f);
+			
+			b2ChainShape chain;
+			chain.CreateChain(vs, 2);
+			platform->CreateFixture(&chain, 0.0f);		
+			
+		}
+		
+		//Eyes
 		{
 			
-			
-			//The plank
-			b2BodyDef *bd = new b2BodyDef;
-    	  	bd->type = b2_dynamicBody;
-    	  	bd->position.Set(0.0f,8.2f);		
-			
-			b2FixtureDef *fd1 = new b2FixtureDef;
-    	  	fd1->density = 0.5;
-    	  	fd1->friction = 0.5;
-    	  	fd1->restitution = 1.0f;
-    		fd1->shape = new b2PolygonShape;
-    	  	b2PolygonShape bs1;
-    	  	bs1.SetAsBox(2.8,0.15, b2Vec2(0.0f,0.0f), 0);
-    	  	fd1->shape = &bs1;
-    	  	b2FixtureDef *fd2 = new b2FixtureDef;
-    	 	fd2->density = 0.2f;
-    	  	fd2->friction = 0.5;
-    	  	fd2->restitution = 0.0f;
-    	  	//fd2->shape = new b2PolygonShape;
-    	  	b2PolygonShape bs2;
-    	  	b2Vec2 vertices1[4];
-      		vertices1[0].Set(-0.4,0);
-      		vertices1[1].Set(-0.4,0.6);
-      		vertices1[2].Set(0.4,0);
-      		vertices1[3].Set(0.4,0.4);
-      		bs2.Set(vertices1, 4, b2Vec2(2.40f,0.0f), 0);
-    	  	fd2->shape = &bs2;
-    	  	b2FixtureDef *fd3 = new b2FixtureDef;
-    	  	fd3->density = 0.3f;
-    	  	fd3->friction = 0.5;
-    	  	fd3->restitution = 0.f;
-    	  	fd3->shape = new b2PolygonShape;
-    	 	b2PolygonShape bs3;
-    	  	bs3.SetAsBox(0.10,0.2, b2Vec2(-2.70f,0.20f), 0);
-    	  	fd3->shape = &bs3;
-    	   
-    	  	b2Body* body2 = m_world->CreateBody(bd);
-    	  	body2->CreateFixture(fd1);
-    	  	body2->CreateFixture(fd2);
-    	  	body2->CreateFixture(fd3);
-			
-			
-    	}
-    	  */	
-    	/*
-    	{
-    		b2Body* b1;
-   	   		b2EdgeShape shape1;
-     		shape1.Set(b2Vec2(-48.0f,18.0f), b2Vec2(-32.0f, 18.0f));
-      		b2BodyDef bd;
-      		b1 = m_world->CreateBody(&bd);
-      		b1->CreateFixture(&shape1, 0.0f);
-      		
-      		
-      		//The triangle wedge
-      		b2Body* sbody;
-      		b2PolygonShape poly;
-      		b2Vec2 vertices[3];
-      		vertices[0].Set(-1,0);
-      		vertices[1].Set(1,0);
-      		vertices[2].Set(0,3.0);
-      		poly.Set(vertices, 3);
-      		b2FixtureDef wedgefd;
-      		wedgefd.shape = &poly;
-      		wedgefd.density = 10.0f;
-      		wedgefd.friction = 0.0f;
-      		wedgefd.restitution = 0.0f;
-      		b2BodyDef wedgebd;
-      		wedgebd.position.Set(-40.0f, 18.0f);
-      		sbody = m_world->CreateBody(&wedgebd);
-      		sbody->CreateFixture(&wedgefd);
-		
-      		//The plank on top of the wedge
-      		b2PolygonShape shape;
-      		shape.SetAsBox(8.0f, 0.15f);
-      		b2BodyDef bd2;
-      		bd2.position.Set(-40.0f, 21.0f);
-      		bd2.type = b2_dynamicBody;
-      		b2Body* body = m_world->CreateBody(&bd2);
-      		b2FixtureDef *fd2 = new b2FixtureDef;
-      		fd2->density = 0.01f;
-      		fd2->friction = 0.8f;
-      		fd2->shape = new b2PolygonShape;
-      		fd2->shape = &shape;
-      		body->CreateFixture(fd2);
-			
-      		b2RevoluteJointDef jd;
-      		b2Vec2 anchor;
-      		anchor.Set(-40.0f, 21.0f);
-      		jd.Initialize(sbody, body, anchor);
-      		m_world->CreateJoint(&jd);
-		
-      		//The light box on the right side of the see-saw
-      		b2PolygonShape shape2;
-      		shape2.SetAsBox(0.5f, 0.5f);
-      		b2BodyDef bd3;
-      		bd3.position.Set(-32.50f, 21.50f);
-      		bd3.type = b2_dynamicBody;
-      		b2Body* body3 = m_world->CreateBody(&bd3);
-      		b2FixtureDef *fd3 = new b2FixtureDef;
-      		fd3->density = 0.01f;
-      		fd3->friction = 0.80f;
-      		fd3->shape = new b2PolygonShape;
-      		fd3->shape = &shape2;
-      		body3->CreateFixture(fd3);
-      		
-      		//The light box 2 on the right side of the see-saw
-      		b2PolygonShape shape3;
-      		shape3.SetAsBox(0.5f, 0.5f);
-      		b2BodyDef bd4;
-      		bd4.position.Set(-31.50f, 14.0f);
-      		bd4.type = b2_dynamicBody;
-      		b2Body* body4 = m_world->CreateBody(&bd4);
-      		b2FixtureDef *fd4 = new b2FixtureDef;
-      		fd4->density = 0.01f;
-      		fd4->shape = new b2PolygonShape;
-      		fd4->shape = &shape3;
-      		body4->CreateFixture(fd4);
-      		
-      		b2Body* spherebody;
-		    b2CircleShape circle;
-      		circle.m_radius = 0.5;
-	
-      		b2FixtureDef ballfd;
-      		ballfd.shape = &circle;
-      		ballfd.density = 10.0f;
-      		ballfd.friction = 0.0f;
-      		ballfd.restitution = 0.5f;
-	
-	  		b2BodyDef ballbd;
-	  		ballbd.type = b2_dynamicBody;
-	  		ballbd.position.Set(17.5f,33.5f);
-	  		spherebody = m_world->CreateBody(&ballbd);
-	  		spherebody->CreateFixture(&ballfd);
-   
-    	} */
+		}
 	}
 
   	sim_t *sim = new sim_t("Dominos", dominos_t::create);
