@@ -68,7 +68,7 @@ namespace cs296
 			ground->CreateFixture(fixture);
 			return ground;
 	}
-	b2Body* drawBox(b2World* m_world,float xC,float yC,float lby2,float bby2,bool isDynamic=false){
+	b2Body* drawBox(b2World* m_world,float xC,float yC,float lby2,float bby2,bool isDynamic=false,float angle=0,float density=0){
 			b2PolygonShape shape;
 			shape.SetAsBox(lby2, bby2);
 
@@ -76,6 +76,7 @@ namespace cs296
 			if(isDynamic){
 				bd.type=b2_dynamicBody;
 			}
+			bd.angle=angle;
 			bd.position.Set(xC, yC);
 			b2Body* ground = m_world->CreateBody(&bd);
 			ground->CreateFixture(&shape, 0.0f);
@@ -118,7 +119,8 @@ namespace cs296
 	}
 
 	dominos_t::dominos_t()
-	{	/**The following generates the ground object. 
+	{	/**<B> Ground </B>
+			The following generates the ground object. 
 			It is a straight line between two points (-90,0) and (90,0)
 		*/
 		{
@@ -127,7 +129,8 @@ namespace cs296
 			vs[1].Set(90.0,0.0);
 			drawChain(m_world,vs,2);
 		}
-		/** This scope initializes all the object in the upper left part of the simulation */
+		///<HR>
+		///<B> UPPER LEFT PART OF THE SIMULATION</B>-----------------------------
 		{
 			/** Platform on which the ball initially rests and the ball itself
 			*/
@@ -146,17 +149,23 @@ namespace cs296
 		
 
 			//The small vertical support to the lever 
-			//drawBox(m_world,-41.4,36.7,0.15,1.45);
+			//drawBox(m_world,b2Vec2(-41.5,38.15 ),b2Vec2(-41.3,38.15));
+			drawBox(m_world,-41.4,36.7,0.15,1.45);
 		
 
 				
-			////////large vertical body
-			/////////the lever which hits ball number 2
+			///The lever which hits ball number 2
+			///================================
 			{
+			///Body definition for the lever
 			b2BodyDef *bd = new b2BodyDef;
 			bd->type = b2_dynamicBody;
 			bd->position.Set(-40.2f,38.65f);		
+			
+			///Three fixtures have been created for the body
 
+			/// fd1 is the fixture which is the long horizontal part of the lever
+			///fd1 is of box shape, 5.6 units long and 0.3 high
 			b2FixtureDef *fd1 = new b2FixtureDef;
 			fd1->density = 5.0;
 			fd1->friction = 0.5;
@@ -165,6 +174,8 @@ namespace cs296
 			b2PolygonShape bs1;
 			bs1.SetAsBox(2.8,0.15, b2Vec2(-0.8f,-0.2f), 0);
 			fd1->shape = &bs1;
+			/// fd2 is the fixture which is the small vertical part of the lever
+			///fd2 is of box shape,0.30 long and 0.8 high
 			b2FixtureDef *fd2 = new b2FixtureDef;
 			fd2->density = 5.0;
 			fd2->friction = 0.5;
@@ -173,6 +184,8 @@ namespace cs296
 			b2PolygonShape bs2;
 			bs2.SetAsBox(0.15,0.4, b2Vec2(2.15f,0.05f), 0);
 			fd2->shape = &bs2;
+			/// fd3 is fixture which is small horizontal part of the lever
+			/// fd3 is of box shape, 1 units long and 0.3 high
 			b2FixtureDef *fd3 = new b2FixtureDef;
 			fd3->density = 5.0;
 			fd3->friction = 0.5;
@@ -181,12 +194,12 @@ namespace cs296
 			b2PolygonShape bs3;
 			bs3.SetAsBox(0.50,0.15, b2Vec2(2.60f,0.4f), 0);
 			fd3->shape = &bs3;
-
+			///body created for the lever, and the above fixtures attached to the body
 			b2Body* body2 = m_world->CreateBody(bd);
 			body2->CreateFixture(fd1);
 			body2->CreateFixture(fd2);
 			body2->CreateFixture(fd3);
-			//jjoin with large vertical bar
+			/// Revolute Joint created between the vertical part of the platform and the lever, so that lever can rotate about the vertical part of the platform
 			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = body1;
 			jointDef.bodyB = body2;
@@ -197,78 +210,71 @@ namespace cs296
 			}
 		
 
-			/// the platform on which the second ball is lying. 
+			/// Platform on which the second ball is lying and the second ball itself have been initialized here
 			/// The lever on the left comes and hits this ball to carry on the RubeGoldberg machine
-			//drawBox(m_world,-36.8,38.1,0.4,0.15);
-			//drawSphere(m_world,-36.8,38.15,0.5,8.0,0.6,0);
-			drawBox(m_world,-36.6,38,0.4,0.15);
-			drawSphere(m_world,-36.6,38.4,0.5,8.0,0.3,0);
-		}
-
-		{		//angles platform
-			b2PolygonShape shape;
-			shape.SetAsBox(3.0f, 0.15f);
-
-			b2BodyDef bd;
-			bd.position.Set(-33.5f, 35.0f);
-			bd.angle = 3.14 - 0.2;
-			b2Body* ground = m_world->CreateBody(&bd);
-			ground->CreateFixture(&shape, 0.0f);
+			/// the box is of length 0.8, 0.3 high and a ball of rad 0.5 has been placed on top of it
+			drawBox(m_world,-36.8,38.1,0.4,0.15);
+			drawSphere(m_world,-36.8,38.15,0.5,8.0,0.6,0);
+			//drawBox(m_world,-36.6,38,0.4,0.15);
+			//drawSphere(m_world,-36.6,38.4,0.5,8.0,0.3,0);
+		
+			/// tilted platform on which the ball falls for a brief peroid of time before falling on the lever. This is just a stepping platform to reach the lever
+			/// it is of length 6, height 0.3 and has been kept at an angle of 2.94 radians
+			drawBox(m_world,-33.5,35.0,3.0,0.15,false,3.14-0.2);
 
 		}
 
 		{
-			//horizontal lever
+			/// Lever on which the second ball falls before going down has been initialized here
+			///Body def and body for the lever,positioned as reqd
 			b2BodyDef bd;
 			bd.type = b2_dynamicBody;
 			bd.position.Set(-21.0f, 31.0f);
-
-			b2PolygonShape shape1;
-			shape1.SetAsBox(8.0f, 0.15f, b2Vec2(-3.0f,0.0f),0);  			
-			//bd.angle = 3.14 - 0.3;
 			b2Body* plank = m_world->CreateBody(&bd);
-			//plank->CreateFixture(&shape, 0.0f);
+
+			/// The fixture of the lever of len 16 and height 0.3 has been positioned appropriately in local coordinates, i.e. wrt to the body center
 			b2FixtureDef *fd1 = new b2FixtureDef;
 			fd1->density = 5.0;
 			fd1->friction = 0.7;
 			fd1->restitution = 0.f;
+			b2PolygonShape shape1;
+			shape1.SetAsBox(8.0f, 0.15f, b2Vec2(-3.0f,0.0f),0);  	
 			fd1->shape = &shape1;
-
-			b2PolygonShape shape;
-			shape.SetAsBox(0.8f, 0.8f, b2Vec2(4.2f,0.8f),0);  			
-			//bd.angle = 3.14 - 0.3;
-			//plank->CreateFixture(&shape, 0.0f);
+			/// fd2 is the fixture of the lever which is the box on the right part of the plank of height 1.6 and length 1.6 too
 			b2FixtureDef *fd2 = new b2FixtureDef;
 			fd2->density = 7.5f;
 			fd2->friction = 0.0f;
 			fd2->restitution = 0.85f;
+			b2PolygonShape shape;
+			shape.SetAsBox(0.8f, 0.8f, b2Vec2(4.2f,0.8f),0);  			
 			fd2->shape = &shape;
-
+			///Both the fixtures are then attached to the plank
 			plank->CreateFixture(fd1);
 			plank->CreateFixture(fd2);
-
-			b2Body* pivot=drawBox(m_world,-21.0,31.0,0.15,0.15);
 			
+			///The pivot is just a small static body with with the plank has been attached (i.e. the plank is attached to this body)
+			b2Body* pivot=drawBox(m_world,-21.0,31.0,0.15,0.15);
+			/// The pivot are plank are joined using a revoluteJoint 
 			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = plank;
 			jointDef.bodyB = pivot;
 			jointDef.localAnchorA.Set(0.0f,0.0f);
 			jointDef.localAnchorB.Set(0.0f,0.0f);
-			//jointDef.collideConnected = false;
 			m_world->CreateJoint(&jointDef);   			   	  	
 
 		}
 
 
 
-
-		//lower left part
-		{	
+		/// <HR>
+		/// <B>LOWER LEFT PART OF THE SIMULATION</B>
+		///=======================================
+		{	/// A platform is created on which the wedge rests
 			drawPlatform(m_world,b2Vec2(-55.0f,3.0f), b2Vec2(-30.0f, 3.0f));
 
 
-			//The triangle wedge
-			b2Body* sbody;
+			///The triangle wedge on which plank rests has been defined here. 
+			/// The wedge has a polygonShape and the polygon shape has been indicated using three vertices which are the end points with respect to the local coordinates
 			b2PolygonShape poly;
 			b2Vec2 vertices[3];
 			vertices[0].Set(-1,0);
@@ -281,11 +287,11 @@ namespace cs296
 			wedgefd.friction = 0.0f;
 			wedgefd.restitution = 1.0f;
 			b2BodyDef wedgebd;
-			wedgebd.position.Set(-36.70f, 3.0f);
-			sbody = m_world->CreateBody(&wedgebd);
+			wedgebd.position.Set(-36.7f, 3.0f);
+			b2Body* sbody = m_world->CreateBody(&wedgebd);
 			sbody->CreateFixture(&wedgefd);
 
-			//The plank on top of the wedge
+			/// The plank on top of the wedge
 			b2FixtureDef *fd2 = new b2FixtureDef;
 			fd2->density = 0.5f;
 			b2PolygonShape shape;
@@ -295,7 +301,7 @@ namespace cs296
 
 			b2RevoluteJointDef jd;
 			b2Vec2 anchor;
-			anchor.Set(-36.70f, 7.0f);
+			anchor.Set(-36.7f, 7.0f);
 			jd.Initialize(sbody, body, anchor);
 			m_world->CreateJoint(&jd);
 
