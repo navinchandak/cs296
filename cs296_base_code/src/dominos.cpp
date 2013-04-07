@@ -387,7 +387,7 @@ namespace cs296
 		/// <HR>
 		/// <B>LOWER RIGHT PART OF THE MACHINE </B> -------------------------------------------------
 		{
-			/// <B> The platform for the two small spheres, and their path, and the sphers<B>
+			/// <B> The platform for the two small spheres, and their path, and the sphers</B>
 			b2Vec2 vs[10];
 			vs[0].Set(41.80f, 19.0f);
 			vs[1].Set(36.50f, 19.0f);
@@ -578,9 +578,6 @@ namespace cs296
 		{
 			drawPlatform(m_world,b2Vec2(-6.5f,21.5f), b2Vec2(-4.5f,21.5f));
 
-			b2BodyDef bd;
-			platform = m_world->CreateBody(&bd);
-			platform->CreateFixture(&shape, 0.0f);
 
 			////////////////////////////
 
