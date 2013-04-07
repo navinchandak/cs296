@@ -58,12 +58,37 @@ namespace cs296
 		eyePlace->CreateFixture(&chain,0.0f);
 
 	}
+	b2Body* drawBox(b2World* m_world,float xC,float yC,b2FixtureDef* fixture, bool isDynamic=false){
+			b2BodyDef bd;
+			if(isDynamic){
+				bd.type=b2_dynamicBody;
+			}
+			bd.position.Set(xC, yC);
+			b2Body* ground = m_world->CreateBody(&bd);
+			ground->CreateFixture(fixture);
+			return ground;
+	}
+	b2Body* drawBox(b2World* m_world,float xC,float yC,float lby2,float bby2,bool isDynamic=false){
+			b2PolygonShape shape;
+			shape.SetAsBox(lby2, bby2);
+
+			b2BodyDef bd;
+			if(isDynamic){
+				bd.type=b2_dynamicBody;
+			}
+			bd.position.Set(xC, yC);
+			b2Body* ground = m_world->CreateBody(&bd);
+			ground->CreateFixture(&shape, 0.0f);
+			return ground;
+
+
+	}
 	void drawArc(b2World* m_world,float xC,float yC,float r,float sA,float eA,int numP){
 		b2Vec2 vs[numP];
 		getArcVec(xC,yC,r,sA,eA,vs,numP);
 		drawChain(m_world,vs,numP);
 	}
-	void drawSphere(b2World* m_world,float xC,float yC,float r,float a,float b, float c){
+	b2Body* drawSphere(b2World* m_world,float xC,float yC,float r,float a,float b, float c){
 
 		b2Body* spherebody;			
 		b2CircleShape circle;
@@ -73,13 +98,14 @@ namespace cs296
 		ballfd.shape = &circle;
 		ballfd.density = a;
 		ballfd.friction = b;
-		ballfd.restitution = b;
+		ballfd.restitution = c;
 
 		b2BodyDef ballbd;
 		ballbd.type = b2_dynamicBody;
 		ballbd.position.Set(xC,yC);
 		spherebody = m_world->CreateBody(&ballbd);
 		spherebody->CreateFixture(&ballfd);
+		return spherebody;
 	}
 	void drawPlatform(b2World* m_world,b2Vec2 a,b2Vec2 b)
 	{		
@@ -92,78 +118,41 @@ namespace cs296
 	}
 
 	dominos_t::dominos_t()
-	{
-		//Ground is represented as a chain
+	{	/**The following generates the ground object. 
+			It is a straight line between two points (-90,0) and (90,0)
+		*/
 		{
 			b2Vec2 vs[2];
 			vs[0].Set(-90.0f,0.0f);
 			vs[1].Set(90.0,0.0);
 			drawChain(m_world,vs,2);
 		}
-
+		/** This scope initializes all the object in the upper left part of the simulation */
 		{
-			//platform on which ball initially rests
-			b2PolygonShape shape;
-			shape.SetAsBox(1.6f, 0.15f);
-
-			b2BodyDef bd;
-			bd.position.Set(-48.5f, 40.0f);
-			b2Body* ground = m_world->CreateBody(&bd);
-			ground->CreateFixture(&shape, 0.0f);
-
-			b2Body* spherebody;
-
-			b2CircleShape circle;
-			circle.m_radius = 0.5;
-
-			b2FixtureDef ballfd;
-			ballfd.shape = &circle;
-			ballfd.density = 1.0f;
-			ballfd.friction = 0.0f;
-			ballfd.restitution = 0.85f;
-
-			b2BodyDef ballbd;
-			ballbd.type = b2_dynamicBody;
-			ballbd.position.Set(-48.5f,40.5f);
-			spherebody = m_world->CreateBody(&ballbd);
-			spherebody->CreateFixture(&ballfd);
-
+			/** Platform on which the ball initially rests and the ball itself
+			*/
+			drawBox(m_world,-48.5,40.0,1.6,0.15);
+			b2Body* spherebody=drawSphere(m_world,-48.5,40.5,0.5,1.0f,0.0f,0.85f);		
+			
+			/** Some force is initially applied on this ball to start off the Rube GoldBerg machine*/
 			b2Vec2 force = b2Vec2(110,0);
 			spherebody->ApplyForce(force, spherebody->GetPosition());
-		}
 
-		{		//horizontal platform on which ball initially falls
-			b2PolygonShape shape;
-			shape.SetAsBox(3.6f, 0.15f);
+			///The platform on which the ball falls initially after initial acceleration
+			///the horizontal part of the platform
+			drawBox(m_world,-43.8,35.0,3.6,0.15);
+			///the vertical part of the platform 
+			b2Body* body1=drawBox(m_world,-40.2,36.8,0.15,1.8);
+		
 
-			b2BodyDef bd;
-			bd.position.Set(-43.8f, 35.0f);
-			b2Body* ground = m_world->CreateBody(&bd);
-			ground->CreateFixture(&shape, 0.0f);
+			//The small vertical support to the lever 
+			//drawBox(m_world,-41.4,36.7,0.15,1.45);
+		
 
-		}
-
-		{		//SMALL VERTICAL BODY
-			b2PolygonShape shape;
-			shape.SetAsBox(0.15f,1.45f);
-
-			b2BodyDef bd;
-			bd.position.Set(-41.4f, 36.70f);
-			b2Body* ground = m_world->CreateBody(&bd);
-			ground->CreateFixture(&shape, 0.0f);
-		}
-
-		{		
+				
 			////////large vertical body
-			b2PolygonShape shape;
-			shape.SetAsBox(0.15f,1.8f);
-
-			b2BodyDef bd1;
-			bd1.position.Set(-40.2f, 36.80f);
-			b2Body* body1 = m_world->CreateBody(&bd1);
-			body1->CreateFixture(&shape, 0.0f);
 			/////////the lever which hits ball number 2
-
+			{
 			b2BodyDef *bd = new b2BodyDef;
 			bd->type = b2_dynamicBody;
 			bd->position.Set(-40.2f,38.65f);		
@@ -205,34 +194,15 @@ namespace cs296
 			jointDef.localAnchorB.Set(0.0f,-0.15f);
 			//jointDef.collideConnected = false;
 			m_world->CreateJoint(&jointDef);
-		}
+			}
+		
 
-		{
-			b2PolygonShape shape;
-			shape.SetAsBox(0.4f, 0.15f);
-			//body
-			b2BodyDef bd;
-			bd.position.Set(-36.8f, 38.10f);
-			b2Body* ground = m_world->CreateBody(&bd);
-			ground->CreateFixture(&shape, 0.0f);
-
-			b2Body* spherebody;
-
-			b2CircleShape circle;
-			circle.m_radius = 0.5;
-
-			b2FixtureDef ballfd;
-			ballfd.shape = &circle;
-			ballfd.density = 8.0f;
-			ballfd.friction = .6f;
-			ballfd.restitution = 0.0f;
-
-
-			b2BodyDef ballbd;
-			ballbd.type = b2_dynamicBody;
-			ballbd.position.Set(-36.8f, 38.15f);
-			spherebody = m_world->CreateBody(&ballbd);
-			spherebody->CreateFixture(&ballfd);
+			/// the platform on which the second ball is lying. 
+			/// The lever on the left comes and hits this ball to carry on the RubeGoldberg machine
+			//drawBox(m_world,-36.8,38.1,0.4,0.15);
+			//drawSphere(m_world,-36.8,38.15,0.5,8.0,0.6,0);
+			drawBox(m_world,-36.6,38,0.4,0.15);
+			drawSphere(m_world,-36.6,38.4,0.5,8.0,0.3,0);
 		}
 
 		{		//angles platform
@@ -277,14 +247,8 @@ namespace cs296
 			plank->CreateFixture(fd1);
 			plank->CreateFixture(fd2);
 
-			b2PolygonShape shape2;
-			shape2.SetAsBox(0.15f,0.15f);
-
-			b2BodyDef bd1;
-			bd1.position.Set(-21.0f,31.0f);
-			b2Body* pivot = m_world->CreateBody(&bd1);
-			pivot->CreateFixture(&shape2,0.0f);
-
+			b2Body* pivot=drawBox(m_world,-21.0,31.0,0.15,0.15);
+			
 			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = plank;
 			jointDef.bodyB = pivot;
@@ -299,13 +263,8 @@ namespace cs296
 
 
 		//lower left part
-		{
-			b2Body* b1;
-			b2EdgeShape shape1;
-			shape1.Set(b2Vec2(-55.0f,3.0f), b2Vec2(-30.0f, 3.0f));
-			b2BodyDef bd;
-			b1 = m_world->CreateBody(&bd);
-			b1->CreateFixture(&shape1, 0.0f);
+		{	
+			drawPlatform(m_world,b2Vec2(-55.0f,3.0f), b2Vec2(-30.0f, 3.0f));
 
 
 			//The triangle wedge
@@ -327,17 +286,12 @@ namespace cs296
 			sbody->CreateFixture(&wedgefd);
 
 			//The plank on top of the wedge
-			b2PolygonShape shape;
-			shape.SetAsBox(4.70f, 0.15f);
-			b2BodyDef bd2;
-			bd2.position.Set(-36.7f, 7.0f);
-			bd2.type = b2_dynamicBody;
-			b2Body* body = m_world->CreateBody(&bd2);
 			b2FixtureDef *fd2 = new b2FixtureDef;
 			fd2->density = 0.5f;
-			fd2->shape = new b2PolygonShape;
+			b2PolygonShape shape;
+			shape.SetAsBox(4.70f, 0.15f);
 			fd2->shape = &shape;
-			body->CreateFixture(fd2);
+			b2Body* body=drawBox(m_world, -36.7,7.0,fd2,true);
 
 			b2RevoluteJointDef jd;
 			b2Vec2 anchor;
@@ -346,101 +300,54 @@ namespace cs296
 			m_world->CreateJoint(&jd);
 
 			//The light box on the right side of the see-saw
-			b2PolygonShape shape2;
-			shape2.SetAsBox(0.5f, 0.5f);
-			b2BodyDef bd3;
-			bd3.position.Set(-40.90f, 7.50f);
-			bd3.type = b2_dynamicBody;
-			b2Body* body3 = m_world->CreateBody(&bd3);
-			b2FixtureDef *fd3 = new b2FixtureDef;
-			fd3->density = 0.7f;
-			fd3->shape = new b2PolygonShape;
-			fd3->shape = &shape2;
-			body3->CreateFixture(fd3);
 
 			//The light box 2 on the right side of the see-saw
-			b2PolygonShape shape3;
-			shape3.SetAsBox(0.5f, 0.5f);
-			b2BodyDef bd4;
-			bd4.position.Set(-32.50f, 7.50f);
-			bd4.type = b2_dynamicBody;
-			b2Body* body4 = m_world->CreateBody(&bd4);
 			b2FixtureDef *fd4 = new b2FixtureDef;
 			fd4->density = 0.7f;
-			fd4->shape = new b2PolygonShape;
+			b2PolygonShape shape3;
+			shape3.SetAsBox(0.5f, 0.5f);
 			fd4->shape = &shape3;
-			body4->CreateFixture(fd4);
+			drawBox(m_world,-40.9,7.5,fd4,true);
+			drawBox(m_world,-32.5,7.5,fd4,true);
 
 		}   	   	 
 
 		{	// right upper part
-			b2BodyDef bd;
-			b2Body* platform = m_world->CreateBody(&bd);
 			b2Vec2 vs[3];
 			vs[0].Set(-10.0f, 40.0f);
 			vs[1].Set(-5.50f, 40.0f);
 			vs[2].Set(42.0f, 34.0f);
-			b2ChainShape chain;
-			chain.CreateChain(vs, 3);
-			platform->CreateFixture(&chain, 0.0f);
+			drawChain(m_world,vs,3);
+			drawSphere(m_world,-6.7,40.8,0.8,0.8,0,0.5);
 
-			/*
-				b2Body* b1;
-				b2EdgeShape shape1;
-				shape1.Set(b2Vec2(-10.0f,40.0f), b2Vec2(42.0f, 34.0f));
-				b2BodyDef bd;
-			//bd.angle = 3.14 - 0.1;
-			b1 = m_world->CreateBody(&bd);
-			b1->CreateFixture(&shape1, 0.0f);*/
 
-			b2Body* spherebody;
-			b2CircleShape circle;
-			circle.m_radius = 0.8;
-
-			b2FixtureDef ballfd;
-			ballfd.shape = &circle;
-			ballfd.density = 0.8f;
-			ballfd.friction = 0.0f;
-			ballfd.restitution = 0.5f;
-
-			b2BodyDef ballbd;
-			ballbd.type = b2_dynamicBody;
-			ballbd.position.Set(-6.70f,40.8f);
-			spherebody = m_world->CreateBody(&ballbd);
-			spherebody->CreateFixture(&ballfd);
-
+																								
 		}
 
 
 		{
 
-			b2PolygonShape shape1;
-			shape1.SetAsBox(0.15f, 2.0f, b2Vec2(0.0f,0.0f),0);  		
 			b2FixtureDef *fd1 = new b2FixtureDef;
 			fd1->density = 2.0;
 			fd1->friction = 0.7;
 			fd1->restitution = 0.6f;
+			b2PolygonShape shape1;
+			shape1.SetAsBox(0.15f, 2.0f, b2Vec2(0.0f,0.0f),0);  		
 			fd1->shape = &shape1;
 
+			b2FixtureDef *fd2 = new b2FixtureDef;
 			b2PolygonShape shape2;
 			shape2.SetAsBox(0.15f, 0.15f, b2Vec2(0.0f,0.0f),0);
+			fd2->shape=&shape2;
 
-			b2RevoluteJointDef jointDef;
+			b2RevoluteJointDef jointDef;	
 			// the lever	
 
 			for(int i=0;i<5;i++)		
 			{
 
-				b2BodyDef bd;
-				bd.type = b2_dynamicBody;
-				bd.position.Set(42.50f - (i%2)*0.7, 33.0f - 3*i);
-				b2Body* plank = m_world->CreateBody(&bd);
-				plank->CreateFixture(fd1);   			
-
-				b2BodyDef bd1;
-				bd1.position.Set(42.50f - (i%2)*0.7 , 33.0f - 3*i);
-				b2Body* pivot = m_world->CreateBody(&bd1);
-				pivot->CreateFixture(&shape2,0.0f);			
+				b2Body* plank=drawBox(m_world,42.50f - (i%2)*0.7, 33.0f - 3*i,fd1,true);
+				b2Body* pivot=drawBox(m_world,42.50f - (i%2)*0.7 , 33.0f - 3*i,fd2);
 
 				//jointDef.collideConnected = false;
 				jointDef.bodyA = plank;
@@ -453,8 +360,6 @@ namespace cs296
 
 		{
 			//bottom wala chain shape
-			b2BodyDef bd;
-			b2Body* platform = m_world->CreateBody(&bd);
 			b2Vec2 vs[10];
 			vs[0].Set(41.80f, 19.0f);
 			vs[1].Set(36.50f, 19.0f);
@@ -466,62 +371,26 @@ namespace cs296
 			vs[7].Set(30.85f, 13.15f);
 			vs[8].Set(30.60f, 13.10f);
 			vs[9].Set(24.50f, 13.10f);
-			b2ChainShape chain;
-			chain.CreateChain(vs, 10);
-			platform->CreateFixture(&chain, 0.0f);
-
-			b2Body* spherebody;
-			b2Body* spherebody1;			
-			b2CircleShape circle;
-			circle.m_radius = 0.4;
-
-			b2FixtureDef ballfd;
-			ballfd.shape = &circle;
-			ballfd.density = 0.4f;
-			ballfd.friction = 0.0f;
-			ballfd.restitution = 0.5f;
-
-			b2BodyDef ballbd;
-			ballbd.type = b2_dynamicBody;
-			ballbd.position.Set(41.40f,19.40f);
-
-			spherebody = m_world->CreateBody(&ballbd);
-			spherebody->CreateFixture(&ballfd);
-
-			b2BodyDef ballbd1;
-			ballbd1.type = b2_dynamicBody;
-			ballbd1.position.Set(39.40f,19.40f);
-			spherebody1 = m_world->CreateBody(&ballbd1);
-			spherebody1->CreateFixture(&ballfd);
-
-
+			drawChain(m_world,vs,10);
+			drawSphere(m_world,41.4,19.4,0.4,0.4,0,0.5);
+			drawSphere(m_world,39.4,19.4,0.4,0.4,0,0.5);
 		}  	
 
 		{ // initially vertical lever
-			b2PolygonShape shape1;
-			shape1.SetAsBox(0.1f, 2.0f, b2Vec2(0.0f,0.0f),0);  		
 			b2FixtureDef *fd1 = new b2FixtureDef;
 			fd1->density = 2.35;
 			fd1->friction = 0.7;
 			fd1->restitution = 0.60f;
+			b2PolygonShape shape1;
+			shape1.SetAsBox(0.1f, 2.0f, b2Vec2(0.0f,0.0f),0);  		
 			fd1->shape = &shape1;
+			
+			b2Body* plank=drawBox(m_world,22.50f,13.0f,fd1,true);
+			b2Body* pivot=drawBox(m_world,22.5,13.0,0.1,0.1);
 
-			b2PolygonShape shape2;
-			shape2.SetAsBox(0.1f, 0.1f, b2Vec2(0.0f,0.0f),0);
-
-			b2RevoluteJointDef jointDef;
-			b2BodyDef bd;
-			bd.type = b2_dynamicBody;
-			bd.position.Set(22.50f,13.0f);
-			b2Body* plank = m_world->CreateBody(&bd);
-			plank->CreateFixture(fd1);   			
-
-			b2BodyDef bd1;
-			bd1.position.Set(22.50f,13.0f);
-			b2Body* pivot = m_world->CreateBody(&bd1);
-			pivot->CreateFixture(&shape2,0.0f);			
 
 			//jointDef.collideConnected = false;
+			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = plank;
 			jointDef.bodyB = pivot;
 			jointDef.localAnchorA.Set(0.0f,0.0f);
@@ -531,14 +400,10 @@ namespace cs296
 			///////////////////////////////////
 
 			//next chain towards le
-			b2BodyDef bd2;
-			b2Body* platform = m_world->CreateBody(&bd2);
 			b2Vec2 vs[2];
 			vs[0].Set(20.0f, 13.10f);
 			vs[1].Set(3.75f, 13.10f);			
-			b2ChainShape chain;
-			chain.CreateChain(vs, 2);
-			platform->CreateFixture(&chain, 0.0f);
+			drawChain(m_world,vs,2);
 
 		}
 
@@ -853,7 +718,7 @@ namespace cs296
 
 				drawPlatform(m_world,b2Vec2(xAxis-1,28.1f),b2Vec2(xAxis+1,28.1f));
 
-				drawSphere(m_world,xAxis,28.4f,0.6f,0.3f,0.0f,0.8f);	
+				drawSphere(m_world,xAxis,28.4f,0.6f,0.3f,0.0f,0.0f);	
 
 				drawArc(m_world,xAxis,23,1,PI/2,(3/2.0)*PI,30);
 
@@ -912,24 +777,15 @@ namespace cs296
 			//shape.Set(vs,8);
 			//shape.SetAsBox(2.85f, 0.2f);
 
-
-
 		}
 
 		//Lips
 		{	
-
 			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),10*PI/12,11*PI/12+0.01,10);
 			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),13*PI/12-0.01,14*PI/12+0.01,10);
 
 		}
 
-		// The eyeballs
-		{	
-
-
-
-		}
 	}
 
 	sim_t *sim = new sim_t("Dominos", dominos_t::create);

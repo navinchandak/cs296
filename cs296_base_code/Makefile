@@ -59,14 +59,14 @@ OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 .PHONY: all setup doc clean distclean
 
-all: setup $(BINDIR)/$(TARGET)
+all: $(PROJECT_ROOT)/external/lib/libBox2D.a setup $(BINDIR)/$(TARGET)
 
 setup:
 	@$(ECHO) "Setting up compilation..."
 	@mkdir -p obj
 	@mkdir -p bin
 
-$(BINDIR)/$(TARGET): $(OBJS)
+$(BINDIR)/$(TARGET): $(OBJS) $(PROJECT_ROOT)/external/lib/libBox2D.a
 	@$(PRINTF) "$(MESG_COLOR)Building executable:$(NO_COLOR) $(FILE_COLOR) %16s$(NO_COLOR)" "$(notdir $@)"
 	@$(CC) -o $@ $(LDFLAGS) $(OBJS) $(LIBS) 2> temp.log || touch temp.err
 	@if test -e temp.err; \
@@ -90,16 +90,36 @@ $(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	fi;
 	@$(RM) -f temp.log temp.err
 
+$(PROJECT_ROOT)/external/lib/libBox2D.a :
+	@cd external/src/; \
+	 tar -xvf Box2D.tgz; \
+	 cd Box2D; \
+	 mkdir build296; \
+	 cd build296; \
+	 cmake ../ && make && make install 
+	 
 doc:
 	@$(ECHO) -n "Generating Doxygen Documentation ...  "
 	@$(RM) -rf doc/html
 	@$(DOXYGEN) $(DOCDIR)/Doxyfile 2 > /dev/null
 	@$(ECHO) "Done"
 
+report:
+	@latex $(DOCDIR)/report_cs296_05.tex 
+	@bibtex report_cs296_05.aux 
+	@latex $(DOCDIR)/report_cs296_05.tex 
+	@latex $(DOCDIR)/report_cs296_05.tex 
+	@dvipdf report_cs296_05.dvi $(DOCDIR)/report_cs296_05.pdf 
+	@$(RM) report_cs296_05.* 
+
 clean:
 	@$(ECHO) -n "Cleaning up..."
 	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~
 	@$(ECHO) "Done"
 
+install: all doc
+
+dist:
+	tar -cvzf cs296_g05_project.tar.gz src scripts doc Makefile
 distclean: clean
 	@$(RM) -rf $(BINDIR) $(DOCDIR)/html
