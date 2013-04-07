@@ -784,8 +784,8 @@ namespace cs296
 
 		//Lips
 		{	
-			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),10*PI/12,11*PI/12+0.01,10);
-			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),13*PI/12-0.01,14*PI/12+0.01,10);
+			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),9*PI/12,11*PI/12+0.01,10);
+			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),13*PI/12-0.01,15*PI/12+0.01,10);
 
 		}
 
