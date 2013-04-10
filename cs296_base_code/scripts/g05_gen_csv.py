@@ -7,7 +7,7 @@ def gen_csv():
 	for i in range(1,x):
 		for j in range(1,x):
 			arg=str(j)
-			opt=subprocess.Popen(["./mybins/cs296_exe_05",arg],stdout=subprocess.PIPE).communicate()[0]
+			opt=subprocess.Popen(["./bin/cs296_base",arg],stdout=subprocess.PIPE).communicate()[0]
 			opt=opt.decode("utf-8")
 			opt=opt.split('\n')
 			p=str(i)+","+str(j)+","

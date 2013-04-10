@@ -55,7 +55,7 @@ namespace cs296
 	}
 	
 	// a function for drawing a chain passing through points specified by vs and numP being no of points
-	void dominos_t::drawChain(b2World* m_world,b2Vec2* vs,int numP){
+	void dominos_t::drawChain(b2Vec2* vs,int numP){
 		b2BodyDef bd;
 		b2Body* eyePlace=m_world->CreateBody(&bd);
 		b2ChainShape chain;
@@ -65,7 +65,7 @@ namespace cs296
 	}
 	
 	// a function for creating a box (both dynamic and static at the desired position)
-	b2Body* dominos_t::drawBox(b2World* m_world,float xC,float yC,b2FixtureDef* fixture, bool isDynamic=false){
+	b2Body* dominos_t::drawBox(float xC,float yC,b2FixtureDef* fixture, bool isDynamic=false){
 			b2BodyDef bd;
 			if(isDynamic){
 				bd.type=b2_dynamicBody;
@@ -77,7 +77,7 @@ namespace cs296
 	}
 	
 	//a function which makes a joint between two given bodies a,b
-	void dominos_t::makeJoint(b2World* m_world,b2Body* a, b2Body* b ){
+	void dominos_t::makeJoint(b2Body* a, b2Body* b ){
 			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = a;
 			jointDef.bodyB = b;
@@ -88,7 +88,7 @@ namespace cs296
 	
 	
 	//a function for creating a box with the required parameters
-	b2Body* dominos_t::drawBox(b2World* m_world,float xC,float yC,float lby2,float bby2,bool isDynamic=false,float angle=0,float density=0){
+	b2Body* dominos_t::drawBox(float xC,float yC,float lby2,float bby2,bool isDynamic=false,float angle=0,float density=0){
 			b2PolygonShape shape;
 			shape.SetAsBox(lby2, bby2);
 
@@ -105,13 +105,13 @@ namespace cs296
 
 	}
 	//function for drawing an arc
-	void dominos_t::drawArc(b2World* m_world,float xC,float yC,float r,float sA,float eA,int numP){
+	void dominos_t::drawArc(float xC,float yC,float r,float sA,float eA,int numP){
 		b2Vec2 vs[numP];
 		getArcVec(xC,yC,r,sA,eA,vs,numP);
-		drawChain(m_world,vs,numP);
+		drawChain(vs,numP);
 	}
 	//function for drawing a sphere with xC and Yc as centre and r as radius with density friction and restitution as a,b,c respectively
-	b2Body* dominos_t::drawSphere(b2World* m_world,float xC,float yC,float r,float a,float b, float c){
+	b2Body* dominos_t::drawSphere(float xC,float yC,float r,float a,float b, float c){
 	
 		b2Body* spherebody;			
 		b2CircleShape circle;
@@ -132,7 +132,7 @@ namespace cs296
 	}
 	
 	//function for creating a platform
-	void dominos_t::drawPlatform(b2World* m_world,b2Vec2 a,b2Vec2 b)
+	void dominos_t::drawPlatform(b2Vec2 a,b2Vec2 b)
 	{		
 		b2Body* platform;
 		b2EdgeShape shape;
@@ -151,15 +151,15 @@ namespace cs296
 			b2Vec2 vs[2];
 			vs[0].Set(-90.0f,0.0f);
 			vs[1].Set(90.0,0.0);
-			drawChain(m_world,vs,2);
+			drawChain(vs,2);
 		}
 		/// <HR>
 		///<B> UPPER LEFT PART OF THE MACHINE</B>-----------------------------
 		{	///<B> Platform and the ball </B>
 			/** Platform on which the ball initially rests and the ball itself
 			*/
-			drawBox(m_world,-48.5,40.0,1.6,0.15);
-			b2Body* spherebody=drawSphere(m_world,-48.5,40.5,0.5,1.0f,0.0f,0.85f);		
+			drawBox(-48.5,40.0,1.6,0.15);
+			b2Body* spherebody=drawSphere(-48.5,40.5,0.5,1.0f,0.0f,0.85f);		
 			
 			/** Some force is initially applied on this ball to start off the Rube GoldBerg machine*/
 			b2Vec2 force = b2Vec2(110,0);
@@ -167,14 +167,14 @@ namespace cs296
 			/// <B>Platform on which the ball falls</B>
 			/// The platform on which the ball falls initially after initial acceleration
 			///the horizontal part of the platform
-			drawBox(m_world,-43.8,35.0,3.6,0.15);
+			drawBox(-43.8,35.0,3.6,0.15);
 			///the vertical part of the platform 
-			b2Body* body1=drawBox(m_world,-40.2,36.8,0.15,1.8);
+			b2Body* body1=drawBox(-40.2,36.8,0.15,1.8);
 		
 
 			//The small vertical support to the lever 
-			//drawBox(m_world,b2Vec2(-41.5,38.15 ),b2Vec2(-41.3,38.15));
-			drawBox(m_world,-41.4,36.7,0.15,1.45);
+			//drawBox(b2Vec2(-41.5,38.15 ),b2Vec2(-41.3,38.15));
+			drawBox(-41.4,36.7,0.15,1.45);
 		
 
 			///<B> Lever which hits ball 2</B>
@@ -236,14 +236,14 @@ namespace cs296
 			/// Platform on which the second ball is lying and the second ball itself have been initialized here
 			/// The lever on the left comes and hits this ball to carry on the RubeGoldberg machine
 			/// the box is of length 0.8, 0.3 high and a ball of rad 0.5 has been placed on top of it
-			drawBox(m_world,-36.8,38.1,0.4,0.15);
-			drawSphere(m_world,-36.8,38.15,0.5,8.0,0.6,0);
-			//drawBox(m_world,-36.6,38,0.4,0.15);
-			//drawSphere(m_world,-36.6,38.4,0.5,8.0,0.3,0);
+			drawBox(-36.8,38.1,0.4,0.15);
+			drawSphere(-36.8,38.15,0.5,8.0,0.6,0);
+			//drawBox(-36.6,38,0.4,0.15);
+			//drawSphere(-36.6,38.4,0.5,8.0,0.3,0);
 		
 			/// tilted platform on which the ball falls for a brief peroid of time before falling on the lever. This is just a stepping platform to reach the lever
 			/// it is of length 6, height 0.3 and has been kept at an angle of 2.94 radians
-			drawBox(m_world,-33.5,35.0,3.0,0.15,false,3.14-0.2);
+			drawBox(-33.5,35.0,3.0,0.15,false,3.14-0.2);
 
 		}
 
@@ -276,7 +276,7 @@ namespace cs296
 			plank->CreateFixture(fd2);
 			
 			///The pivot is just a small static body with with the plank has been attached (i.e. the plank is attached to this body)
-			b2Body* pivot=drawBox(m_world,-21.0,31.0,0.15,0.15);
+			b2Body* pivot=drawBox(-21.0,31.0,0.15,0.15);
 			/// The pivot are plank are joined using a revoluteJoint 
 			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = plank;
@@ -294,7 +294,7 @@ namespace cs296
 
 		/// <B> Platform </B>
 		{	/// A platform is created on which the wedge rests
-			drawPlatform(m_world,b2Vec2(-55.0f,3.0f), b2Vec2(-30.0f, 3.0f));
+			drawPlatform(b2Vec2(-55.0f,3.0f), b2Vec2(-30.0f, 3.0f));
 
 			///<B>Wedge and the lever on top of it, with the two boxes on top of the lever</B>
 
@@ -322,7 +322,7 @@ namespace cs296
 			b2PolygonShape shape;
 			shape.SetAsBox(4.70f, 0.15f);
 			fd2->shape = &shape;
-			b2Body* body=drawBox(m_world, -36.7,7.0,fd2,true);
+			b2Body* body=drawBox( -36.7,7.0,fd2,true);
 			/// The plank is attached to the wedge using a revoluteJoint
 			b2RevoluteJointDef jd;
 			b2Vec2 anchor;
@@ -337,9 +337,9 @@ namespace cs296
 			shape3.SetAsBox(0.5f, 0.5f);
 			fd4->shape = &shape3;
 			///The light box on the left side of the see-saw
-			drawBox(m_world,-40.9,7.5,fd4,true);
+			drawBox(-40.9,7.5,fd4,true);
 			///The light box 2 on the right side of the see-saw
-			drawBox(m_world,-32.5,7.5,fd4,true);
+			drawBox(-32.5,7.5,fd4,true);
 
 		}   	   	 
 		/// <HR>
@@ -352,9 +352,9 @@ namespace cs296
 			vs[1].Set(-5.50f, 40.0f);
 			vs[2].Set(42.0f, 34.0f);
 			/// The path has been initialized as a chain of three vertices positioned as required
-			drawChain(m_world,vs,3);
+			drawChain(vs,3);
 			/// The ball has been placed on the path and is of rad 0.8
-			drawSphere(m_world,-6.7,40.8,0.8,0.8,0,0.5);
+			drawSphere(-6.7,40.8,0.8,0.8,0,0.5);
 
 
 																								
@@ -385,9 +385,9 @@ namespace cs296
 			for(int i=0;i<5;i++)		
 			{
 				///Plank body created at requires position using fd1
-				b2Body* plank=drawBox(m_world,42.50f - (i%2)*0.7, 33.0f - 3*i,fd1,true);
+				b2Body* plank=drawBox(42.50f - (i%2)*0.7, 33.0f - 3*i,fd1,true);
 				///pivot created at required position using fd2
-				b2Body* pivot=drawBox(m_world,42.50f - (i%2)*0.7 , 33.0f - 3*i,fd2);
+				b2Body* pivot=drawBox(42.50f - (i%2)*0.7 , 33.0f - 3*i,fd2);
 
 				//jointDef.collideConnected = false;
 				///The pivot and the plank are joined using revolute joint
@@ -416,10 +416,10 @@ namespace cs296
 			vs[8].Set(30.60f, 13.10f);
 			vs[9].Set(24.50f, 13.10f);
 			/// The path/platform has been initialized as a chain, and the chain is defined using 10 vertices, which have been alloted x,y coordinates as required
-			drawChain(m_world,vs,10);
+			drawChain(vs,10);
 			/// The two small spheres of rad 0.4, positioned as reqd on top of the platform
-			drawSphere(m_world,41.4,19.4,0.4,0.4,0,0.5);
-			drawSphere(m_world,39.4,19.4,0.4,0.4,0,0.5);
+			drawSphere(41.4,19.4,0.4,0.4,0,0.5);
+			drawSphere(39.4,19.4,0.4,0.4,0,0.5);
 		}  	
 		/// <B> Lever which is closed by one ball for another ball to let through </B>
 		{ /// fd1 is the fixture for the plank, of length 0.2 and 4 high 
@@ -431,13 +431,13 @@ namespace cs296
 			shape1.SetAsBox(0.1f, 2.0f, b2Vec2(0.0f,0.0f),0);  		
 			fd1->shape = &shape1;
 			/// The plank is created, using fixture fd1 at required position
-			b2Body* plank=drawBox(m_world,22.50f,13.0f,fd1,true);
+			b2Body* plank=drawBox(22.50f,13.0f,fd1,true);
 			/// The pivot is created at the center of the plank of height and length 0.2
-			b2Body* pivot=drawBox(m_world,22.5,13.0,0.1,0.1);
+			b2Body* pivot=drawBox(22.5,13.0,0.1,0.1);
 
 
 			/// A joint has been created to join the pivot and the plank
-			makeJoint(m_world,plank,pivot);
+			makeJoint(plank,pivot);
 		}
 		/// <B> The platform towards the left of the vertical plank</B>
 		{
@@ -445,7 +445,7 @@ namespace cs296
 			vs[0].Set(20.0f, 13.10f);
 			vs[1].Set(3.75f, 13.10f);			
 			/// The platform is a chain, defined using two vertices
-			drawChain(m_world,vs,2);
+			drawChain(vs,2);
 
 		}
 		///<B> The curved platform at the bottom</B>
@@ -477,10 +477,10 @@ namespace cs296
 			vs[44].Set(-3.73f, 11.55f);
 			vs[45].Set(-3.71f, 11.50f);
 			/// chain created using the above vertices
-			drawChain(m_world,vs,46);
+			drawChain(vs,46);
 
 			/// <B> Sphere on the platform </B>
-			drawSphere(m_world,0,4.85,0.4,0.3,0,1);
+			drawSphere(0,4.85,0.4,0.3,0,1);
 
 		}
 
@@ -489,7 +489,7 @@ namespace cs296
 			vs[0].Set(-4.65f, 6.2f);
 			vs[1].Set(12.50f, 6.2f);
 			/// platform initialized as a chain of vertices			
-			drawChain(m_world,vs,2);
+			drawChain(vs,2);
 		/// <B>The triangle wedge on top of platform </B>
 			/// wedge is of polygon shape (traingular), defined using three vertices
 			b2PolygonShape poly;
@@ -519,7 +519,7 @@ namespace cs296
 			fd2->density = 0.5f;
 			fd2->shape = new b2PolygonShape;
 			fd2->shape = &shape;
-			//drawBox(m_world,0,8.2,5,0.15,true,0,0.5);
+			//drawBox(0,8.2,5,0.15,true,0,0.5);
 			///bs1 is the polygon shape for the trapezium on top of the plank, whose vertices are defined using vertices
 			b2PolygonShape bs1;
 			b2Vec2 vertices1[4];
@@ -553,7 +553,7 @@ namespace cs296
 			vs[0].Set(0.0f, 13.10f);
 			vs[1].Set(-7.0f, 13.10f);		
 			/// defined using a chain of vertices	
-			drawChain(m_world,vs,2);
+			drawChain(vs,2);
 		}
 		/// <HR>
 		///<B> CENTRAL PART OF THE MACHINE</B>-----------------------------
@@ -585,15 +585,15 @@ namespace cs296
 			plank->CreateFixture(fd2);   			
 
 			/// pivot is a box of length and height 0.3
-			b2Body* pivot=drawBox(m_world,-8,18,0.15,0.15);
+			b2Body* pivot=drawBox(-8,18,0.15,0.15);
 
 			/// A revoluteJoint is created between the pivot and the plank
-			makeJoint(m_world,plank,pivot);
+			makeJoint(plank,pivot);
 		}
 		/// <B> The box and its platform which the stick hits </B>
 		{
 			/// drawing the platform 
-			drawPlatform(m_world,b2Vec2(-6.5f,21.5f), b2Vec2(-4.5f,21.5f));
+			drawPlatform(b2Vec2(-6.5f,21.5f), b2Vec2(-4.5f,21.5f));
 
 
 			////////////////////////////
@@ -617,7 +617,7 @@ namespace cs296
 		///<B> The pulley system </B>
 		{
 		
-		///<B> the open box into which a block falls from the left , which in turn activates the pulley system
+		///<B> the open box into which a block falls from the left , which in turn activates the pulley system</B>
 		
 	  ///bodydef for the open box
 			b2BodyDef *bd = new b2BodyDef;
@@ -684,16 +684,6 @@ namespace cs296
 			///creating the fixture
 			box2->CreateFixture(fd4);
 
-			/*//support
-			  b2BodyDef sp;
-			  b2Body* platform = m_world->CreateBody(&sp);
-			  b2Vec2 vs[2];
-			  vs[0].Set(20.2f, 32.60f);
-			  vs[1].Set(19.8f, 32.60f);			
-			  b2ChainShape chain;
-			  chain.CreateChain(vs, 2);
-			  platform->CreateFixture(&chain, 0.0f);
-			 */
 
 			/// The pulley joint
 			
@@ -771,16 +761,16 @@ namespace cs296
 				m_world->CreateJoint(&jointDef);  
 
 				///platform on which the spheres stay (using the function drawplatform) the distance between the two platforms is 8 (xAxis is 16 and 24 in the two iterations of the for loop) 
-				drawPlatform(m_world,b2Vec2(xAxis-1,28.1f),b2Vec2(xAxis+1,28.1f));
+				drawPlatform(b2Vec2(xAxis-1,28.1f),b2Vec2(xAxis+1,28.1f));
         
         
         /// the spheres of radius 0.6 which fall off the platform to complete the eyes of the pulley
         ///the distance between the spheres is 8 as xAxis is 16 and 24 in the first and second iteration
-				drawSphere(m_world,xAxis,28.4f,0.6f,0.3f,0.0f,0.0f);	
+				drawSphere(xAxis,28.4f,0.6f,0.3f,0.0f,0.0f);	
         
         
         //arcs on which the spheres fall , they are positioned at a distance of 8 from each other, xAxis being 16 and 24 in the two iterations
-        drawArc(m_world,xAxis,23,1,PI/2,(3/2.0)*PI,30);
+        drawArc(xAxis,23,1,PI/2,(3/2.0)*PI,30);
 
 
 ///the funnel like bodies which facilitate the spheres to fall onto the arcs made above 
@@ -796,10 +786,10 @@ namespace cs296
 					vs[5].Set(xAxis + dir*(1.40),26.7f);
 					vs[6].Set(xAxis + dir*(1.40),25.5f);
 				///	the right part is a vertical line , drawn as a chain with 2 points , whose coordinates are defined below
-					drawChain(m_world,vs,7);
+					drawChain(vs,7);
 					vs[0].Set(xAxis - dir*(0.7),27.0f);
 					vs[1].Set(xAxis - dir*(0.7),25.5f);
-					drawChain(m_world,vs,2); 
+					drawChain(vs,2); 
 
 				}
 
@@ -813,7 +803,7 @@ namespace cs296
 		{
 
 
-///<B>the dynamic type chain like body which falls off the planks to complete the lips of the smiley<B>
+///<B>the dynamic type chain like body which falls off the planks to complete the lips of the smiley</B>
 
 			const int num=6;
 ///the body has 6 fixtures, each being of polygon shape , with 4 vertices , the upper vertices of all fixtures lie on an arc and lower vertices all lie on a different arc
@@ -866,8 +856,8 @@ namespace cs296
 		
 		///the part of the lips which are static are created using the drawArc function with radius 2.85/sin(PI/12)
 		{	
-			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),9*PI/12,11*PI/12+0.01,10);
-			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),13*PI/12-0.01,15*PI/12+0.01,10);
+			drawArc(20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),9*PI/12,11*PI/12+0.01,10);
+			drawArc(20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),13*PI/12-0.01,15*PI/12+0.01,10);
 
 		}
 

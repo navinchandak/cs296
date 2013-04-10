@@ -13,7 +13,6 @@ DOXYGEN = doxygen
 ######################################
 # Project Name (generate executable with this name)
 TARGET = cs296_base
-
 # Project Paths
 PROJECT_ROOT=.
 EXTERNAL_ROOT=$(PROJECT_ROOT)/external
@@ -21,6 +20,8 @@ SRCDIR = $(PROJECT_ROOT)/src
 OBJDIR = $(PROJECT_ROOT)/obj
 BINDIR = $(PROJECT_ROOT)/bin
 DOCDIR = $(PROJECT_ROOT)/doc
+INSTALL_PATH = $(PROJECT_ROOT)/install
+
 
 # Library Paths
 BOX2D_ROOT=$(EXTERNAL_ROOT)
@@ -96,8 +97,19 @@ $(PROJECT_ROOT)/external/lib/libBox2D.a :
 	 cd Box2D; \
 	 mkdir build296; \
 	 cd build296; \
-	 cmake ../ && make && make install 
-	 
+	 cmake ../ && make && make install
+ 
+setupplot:
+	rm $(SRCDIR)/main.cpp
+	cp $(SRCDIR)/temp/maintext.cpp $(SRCDIR)/main.cpp
+	mkdir -p data
+	mkdir -p plots
+
+plot:setupplot	 all 
+	@python3 ./scripts/g05_gen_csv.py
+	@python3 ./scripts/g05_gen_plots.py
+	@cp $(SRCDIR)/temp/mainGUI.cpp $(SRCDIR)/main.cpp
+
 doc:
 	@$(ECHO) -n "Generating Doxygen Documentation ...  "
 	@$(RM) -rf doc/html
@@ -105,21 +117,26 @@ doc:
 	@$(ECHO) "Done"
 
 report:
-	@latex $(DOCDIR)/report_cs296_05.tex 
-	@bibtex report_cs296_05.aux 
-	@latex $(DOCDIR)/report_cs296_05.tex 
-	@latex $(DOCDIR)/report_cs296_05.tex 
-	@dvipdf report_cs296_05.dvi $(DOCDIR)/report_cs296_05.pdf 
-	@$(RM) report_cs296_05.* 
+	@pdflatex $(DOCDIR)/itslatex.tex 
+	@bibtex itslatex.aux 
+	@pdflatex $(DOCDIR)/itslatex.tex 
+	@pdflatex $(DOCDIR)/itslatex.tex 
+	@$(RM) itslatex.* 
+	@python3 ./scripts/g05_gen_html.py
 
 clean:
 	@$(ECHO) -n "Cleaning up..."
 	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~
 	@$(ECHO) "Done"
 
-install: all doc
 
-dist:
-	tar -cvzf cs296_g05_project.tar.gz src scripts doc Makefile
+
+install:all report
+	@mkdir -p $(INSTALL_PATH)
+	@cp -r bin doc plots scripts $(INSTALL_PATH)/
+
+dist:distclean
+	cd ../;\
+	tar -cvzf cs296_g05_project.tar.gz cs296_base_code
 distclean: clean
 	@$(RM) -rf $(BINDIR) $(DOCDIR)/html

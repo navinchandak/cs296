@@ -149,6 +149,7 @@ int main(int argc, char** argv)
   entry = sim;
   test = entry->create_fcn();
  //myfunc(10000);
+ //return 0;
 
   //! This initializes GLUT
   glutInit(&argc, argv);

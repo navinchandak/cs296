@@ -40,13 +40,13 @@ namespace cs296
       return new dominos_t;
     }
 	void getArcVec(float xC,float yC,float r,float sA,float eA,b2Vec2* vs,int numP);
-	void drawChain(b2World* m_world,b2Vec2* vs,int numP);
-	b2Body* drawBox(b2World* m_world,float xC,float yC,b2FixtureDef* fixture, bool isDynamic);
-	void makeJoint(b2World* m_world,b2Body* a, b2Body* b );
-	b2Body* drawBox(b2World* m_world,float xC,float yC,float lby2,float bby2,bool isDynamic,float angle,float density);
-	void drawArc(b2World* m_world,float xC,float yC,float r,float sA,float eA,int numP);
-	b2Body* drawSphere(b2World* m_world,float xC,float yC,float r,float a,float b, float c);
-	void drawPlatform(b2World* m_world,b2Vec2 a,b2Vec2 b);
+	void drawChain(b2Vec2* vs,int numP);
+	b2Body* drawBox(float xC,float yC,b2FixtureDef* fixture, bool isDynamic);
+	void makeJoint(b2Body* a, b2Body* b );
+	b2Body* drawBox(float xC,float yC,float lby2,float bby2,bool isDynamic,float angle,float density);
+	void drawArc(float xC,float yC,float r,float sA,float eA,int numP);
+	b2Body* drawSphere(float xC,float yC,float r,float a,float b, float c);
+	void drawPlatform(b2Vec2 a,b2Vec2 b);
   };
 }
   

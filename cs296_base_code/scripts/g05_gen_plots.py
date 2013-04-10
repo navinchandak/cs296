@@ -83,7 +83,7 @@ pylab.xlabel('Iteration value')
 pylab.ylabel('Average steptime and loop time over reruns(in ms)')
 pylab.title('Plot01')
 pylab.legend()
-pylab.savefig('./plots/g05_lab09_plot01.png')
+pylab.savefig('./plots/plot01.png')
 pylab.show()
 
 
@@ -99,7 +99,7 @@ pylab.xlabel('Iteration value')
 pylab.ylabel('Averaged values over all reruns(in ms)')
 pylab.title('Plot02')
 pylab.legend()
-pylab.savefig('./plots/g05_lab09_plot02.png')
+pylab.savefig('./plots/plot02.png')
 pylab.show()
 
 
@@ -112,7 +112,7 @@ pylab.xlabel('Rerun number')
 pylab.ylabel('Average steptime and loop time over all iterations(in ms)')
 pylab.title('Plot03')
 pylab.legend()
-pylab.savefig('./plots/g05_lab09_plot03.png')
+pylab.savefig('./plots/plot03.png')
 pylab.show()
 
 
@@ -129,7 +129,7 @@ pylab.xlabel('Rerun number')
 pylab.ylabel('Averaged values over all iterations(in ms)')
 pylab.title('Plot04')
 pylab.legend()
-pylab.savefig('./plots/g05_lab09_plot04.png')
+pylab.savefig('./plots/plot04.png')
 pylab.show()
 
 
@@ -139,7 +139,7 @@ pylab.xlabel('Iteration value')
 pylab.ylabel('Average steptime over all reruns with y errorbars(in ms)')
 pylab.title('Plot05')
 pylab.legend()
-pylab.savefig('./plots/g05_lab09_plot05.png')
+pylab.savefig('./plots/plot05.png')
 pylab.show()
 
 
@@ -151,5 +151,5 @@ pylab.xlabel('Step time(in ms)')
 pylab.ylabel('Frequency')
 pylab.title('Plot06')
 pylab.legend()
-pylab.savefig('./plots/g05_lab09_plot06.png')
+pylab.savefig('./plots/plot06.png')
 pylab.show()
