@@ -44,7 +44,7 @@ namespace cs296
 
 //a function which helps in drawing an arc, givng it's radius , centre, and the angle made at the centre by the arc
 // numP being the no of points and vs being the vector to which points on the arc are set.
-	void getArcVec(float xC,float yC,float r,float sA,float eA,b2Vec2* vs,int numP){
+	void dominos_t::getArcVec(float xC,float yC,float r,float sA,float eA,b2Vec2* vs,int numP){
 
 		for (int i=0;i<numP;i++)
 		{
@@ -55,7 +55,7 @@ namespace cs296
 	}
 	
 	// a function for drawing a chain passing through points specified by vs and numP being no of points
-	void drawChain(b2World* m_world,b2Vec2* vs,int numP){
+	void dominos_t::drawChain(b2World* m_world,b2Vec2* vs,int numP){
 		b2BodyDef bd;
 		b2Body* eyePlace=m_world->CreateBody(&bd);
 		b2ChainShape chain;
@@ -65,7 +65,7 @@ namespace cs296
 	}
 	
 	// a function for creating a box (both dynamic and static at the desired position)
-	b2Body* drawBox(b2World* m_world,float xC,float yC,b2FixtureDef* fixture, bool isDynamic=false){
+	b2Body* dominos_t::drawBox(b2World* m_world,float xC,float yC,b2FixtureDef* fixture, bool isDynamic=false){
 			b2BodyDef bd;
 			if(isDynamic){
 				bd.type=b2_dynamicBody;
@@ -77,7 +77,7 @@ namespace cs296
 	}
 	
 	//a function which makes a joint between two given bodies a,b
-	void makeJoint(b2World* m_world,b2Body* a, b2Body* b ){
+	void dominos_t::makeJoint(b2World* m_world,b2Body* a, b2Body* b ){
 			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = a;
 			jointDef.bodyB = b;
@@ -88,7 +88,7 @@ namespace cs296
 	
 	
 	//a function for creating a box with the required parameters
-	b2Body* drawBox(b2World* m_world,float xC,float yC,float lby2,float bby2,bool isDynamic=false,float angle=0,float density=0){
+	b2Body* dominos_t::drawBox(b2World* m_world,float xC,float yC,float lby2,float bby2,bool isDynamic=false,float angle=0,float density=0){
 			b2PolygonShape shape;
 			shape.SetAsBox(lby2, bby2);
 
@@ -105,14 +105,14 @@ namespace cs296
 
 	}
 	//function for drawing an arc
-	void drawArc(b2World* m_world,float xC,float yC,float r,float sA,float eA,int numP){
+	void dominos_t::drawArc(b2World* m_world,float xC,float yC,float r,float sA,float eA,int numP){
 		b2Vec2 vs[numP];
 		getArcVec(xC,yC,r,sA,eA,vs,numP);
 		drawChain(m_world,vs,numP);
 	}
 	//function for drawing a sphere with xC and Yc as centre and r as radius with density friction and restitution as a,b,c respectively
-	b2Body* drawSphere(b2World* m_world,float xC,float yC,float r,float a,float b, float c){
-
+	b2Body* dominos_t::drawSphere(b2World* m_world,float xC,float yC,float r,float a,float b, float c){
+	
 		b2Body* spherebody;			
 		b2CircleShape circle;
 		circle.m_radius = r;
@@ -132,7 +132,7 @@ namespace cs296
 	}
 	
 	//function for creating a platform
-	void drawPlatform(b2World* m_world,b2Vec2 a,b2Vec2 b)
+	void dominos_t::drawPlatform(b2World* m_world,b2Vec2 a,b2Vec2 b)
 	{		
 		b2Body* platform;
 		b2EdgeShape shape;
