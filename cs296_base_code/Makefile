@@ -120,23 +120,30 @@ report:
 	@pdflatex $(DOCDIR)/itslatex.tex 
 	@bibtex itslatex.aux 
 	@pdflatex $(DOCDIR)/itslatex.tex 
-	@pdflatex $(DOCDIR)/itslatex.tex 
+	@pdflatex $(DOCDIR)/itslatex.tex
+	@mv itslatex.pdf $(DOCDIR)/g05_report.pdf 
 	@$(RM) itslatex.* 
 	@python3 ./scripts/g05_gen_html.py
 
 clean:
 	@$(ECHO) -n "Cleaning up..."
-	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~
+	@$(RM) -rf $(OBJDIR) *~ $(DEPS) $(SRCDIR)/*~ data $(BINDIR) 
 	@$(ECHO) "Done"
 
 
 
-install:all report
+install:all 
 	@mkdir -p $(INSTALL_PATH)
 	@cp -r bin doc plots scripts $(INSTALL_PATH)/
+	@rm $(INSTALL_PATH)/doc/itslatex.tex $(INSTALL_PATH)/doc/mybib.bib $(INSTALL_PATH)/doc/Doxyfile
 
 dist:distclean
 	cd ../;\
 	tar -cvzf cs296_g05_project.tar.gz cs296_base_code
+
 distclean: clean
 	@$(RM) -rf $(BINDIR) $(DOCDIR)/html
+	@$(RM) -rf $(DOCDIR)/g05_report.html $(DOCDIR)/g05_report.pdf
+	@$(RM) -rf ./external/src/Box2D ./external/include/* ./external/lib/*
+	@$(RM) -rf $(INSTALL_PATH)
+

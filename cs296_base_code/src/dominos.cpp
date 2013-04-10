@@ -42,29 +42,40 @@ namespace cs296
 {
 #define PI 3.14159265
 
-//a function which helps in drawing an arc, givng it's radius , centre, and the angle made at the centre by the arc
-// numP being the no of points and vs being the vector to which points on the arc are set.
+/**a function which helps in drawing an arc, givng it's radius , centre, and the angle made at the centre by the arc
+	numP being the no of points and vs being the vector to which points on the arc are set.
+*/
 	void dominos_t::getArcVec(float xC,float yC,float r,float sA,float eA,b2Vec2* vs,int numP){
-
+		/// a for loop which calculates the points in an arc, using the standard formula for the points in a circle
+		///finds points at angles uniformly between sA and eA
 		for (int i=0;i<numP;i++)
 		{
+			/// finding the point at the angle theta
 			float theta = (sA) + ((eA-sA)/(numP-1))*i;
 			vs[i].Set(xC+r*sin(theta), yC+r*cos(theta));
 		}
 
 	}
 	
-	// a function for drawing a chain passing through points specified by vs and numP being no of points
+	/// a function for drawing a chain passing through points specified by vs and numP being no of points
 	void dominos_t::drawChain(b2Vec2* vs,int numP){
+		///create a b2BodyDef and initialize the body with the b2BodyDef
 		b2BodyDef bd;
 		b2Body* eyePlace=m_world->CreateBody(&bd);
+		///initialize the chain shape with all the points given as vs
 		b2ChainShape chain;
 		chain.CreateChain(vs,numP);
+		///create the fixture to the body
 		eyePlace->CreateFixture(&chain,0.0f);
 
 	}
 	
-	// a function for creating a box (both dynamic and static at the desired position)
+	/** a function for creating a box (both dynamic and static at the desired position)
+	\param xc the x center of the box
+	\param yx 
+
+	\return the final body 
+	*/
 	b2Body* dominos_t::drawBox(float xC,float yC,b2FixtureDef* fixture, bool isDynamic=false){
 			b2BodyDef bd;
 			if(isDynamic){

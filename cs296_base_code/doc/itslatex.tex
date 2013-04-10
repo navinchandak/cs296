@@ -2,6 +2,8 @@
 \usepackage{times}
 \usepackage{graphicx}
 \usepackage{babel}
+\usepackage{cite}
+\usepackage{url}
 \usepackage[top=1.5cm, bottom=1.5cm, left=1cm, right=1cm]{geometry}
 
 \begin{document}
@@ -23,7 +25,7 @@
 \maketitle
 
 \section{Introduction}
-This report explains the rube goldberg machine designed by us, its difference from the original design and the interesting parts in our design. We also analyse our code using various techniques.
+This report explains the rube goldberg machine ~\cite{wiki} designed by us, its difference from the original design and the interesting parts in our design. We also analyse our code using various techniques. 
 
 
 \section{Present and Original Design}
@@ -51,7 +53,7 @@ There are some minor additions to our original design to make our simulation wor
 
 
 \section{Interesting Parts of our Design}
-We would like to point out some parts of our simulation design that make it interesting.
+We would like to point out some parts of our simulation design that make it interesting.~\cite{hcv} ~\cite{hrw}
 \begin{itemize}
 \item There is a revolving platform on which a ball comes from its upper left side and it releases it towards its bottom right side.
 \newline
@@ -81,7 +83,7 @@ We would like to point out some parts of our simulation design that make it inte
 \end{itemize}
 
 
-\section{Analysis of plots}
+\section{Analysis of plots ~\cite{matplotlib} }
 \subsection{Analysis of plot01(image below) : [Average (StepTime and LoopTime over reruns) vs number of iterations]}
 \begin{itemize}
 \item The stepTime and looptime are very close to each other. This is meaningful because the only major process that is happening inside the loop is Step function and apart from the step function, only a few addition, subtraction and reading is happening.
@@ -151,7 +153,7 @@ There is a marked difference in the time taken by code in the release and debug 
 The size of the executable in debug-mode is 1.4M, while in release-mode it is just 690K. 
 
 
-\section{Call Graphs}
+\section{Call Graphs ~\cite{Gprof2Dot}}
 The callgraphs for debug and release mode respectively :
 \newline
 \includegraphics[width=20cm, height=3cm]{doc/debug.png}
@@ -166,5 +168,8 @@ For release mode, we can see that there are no arcs coming out of
 any functions which implies that all the callee functions are made
 inline to the caller functions , where as there are a large number
 of function calls which are present in callgraphs for debug mode.
+
+\bibliography{doc/mybib}{}
+\bibliographystyle{plain}
 
 \end{document}
