@@ -64,7 +64,33 @@ namespace cs296
 //! This opens up the cs296 namespace
 //! What is the consequence of opening up a namespace?
 using namespace cs296;
-
+/*void myfunc(int num){
+	float32 time_step = settings.hz > 0.0f ? 1.0f / settings.hz : float32(0.0f);
+	b2World* m_world= (entry->create_fcn())->get_world_temp();
+	const b2Profile& p = m_world->GetProfile();
+	struct timeval tim; 
+	double stepTimeAvg=0.0,colTimeAvg=0.0,vupdateTimeAvg=0.0,pupdateTimeAvg=0.0,loopTimeAvg=0.0;
+	gettimeofday(&tim, NULL);  
+	double t1=tim.tv_sec*1000.0+tim.tv_usec/1000.0;
+	for(int i=0;i<num;i++){
+		m_world->Step(time_step, settings.velocity_iterations, settings.position_iterations);
+		stepTimeAvg += p.step;
+		colTimeAvg +=  p.collide;
+		vupdateTimeAvg += p.solveVelocity;
+		pupdateTimeAvg += p.solvePosition;
+		gettimeofday(&tim, NULL);  
+	}
+	double t2=tim.tv_sec*1000.0+tim.tv_usec/1000.0;
+	loopTimeAvg=t2-t1;
+	double divide=num*1.0;
+	printf("Average time per step is %5.5f ms\n",(stepTimeAvg/divide));
+	printf("Average time per collisions is %5.5f ms\n",(colTimeAvg/divide));
+	printf("Average time per velocity updates is %5.5f ms\n",(vupdateTimeAvg/divide));
+	printf("Average time per position updates is %5.5f ms\n",(pupdateTimeAvg/divide));
+	printf("\n");
+	printf("Total time for loop is %5.5f ms\n",loopTimeAvg/divide);
+	printf("This is from the source code branch made by Navin Chandak from Group 05 for CS296 Lab 04.\n");
+}*/
 
 //! This function creates all the GLUI gui elements
 void create_glui_ui(void)
@@ -122,6 +148,7 @@ int main(int argc, char** argv)
   
   entry = sim;
   test = entry->create_fcn();
+ //myfunc(10000);
 
   //! This initializes GLUT
   glutInit(&argc, argv);

@@ -41,6 +41,9 @@ using namespace std;
 namespace cs296
 {
 #define PI 3.14159265
+
+//a function which helps in drawing an arc, givng it's radius , centre, and the angle made at the centre by the arc
+// numP being the no of points and vs being the vector to which points on the arc are set.
 	void getArcVec(float xC,float yC,float r,float sA,float eA,b2Vec2* vs,int numP){
 
 		for (int i=0;i<numP;i++)
@@ -50,6 +53,8 @@ namespace cs296
 		}
 
 	}
+	
+	// a function for drawing a chain passing through points specified by vs and numP being no of points
 	void drawChain(b2World* m_world,b2Vec2* vs,int numP){
 		b2BodyDef bd;
 		b2Body* eyePlace=m_world->CreateBody(&bd);
@@ -58,6 +63,8 @@ namespace cs296
 		eyePlace->CreateFixture(&chain,0.0f);
 
 	}
+	
+	// a function for creating a box (both dynamic and static at the desired position)
 	b2Body* drawBox(b2World* m_world,float xC,float yC,b2FixtureDef* fixture, bool isDynamic=false){
 			b2BodyDef bd;
 			if(isDynamic){
@@ -68,6 +75,8 @@ namespace cs296
 			ground->CreateFixture(fixture);
 			return ground;
 	}
+	
+	//a function which makes a joint between two given bodies a,b
 	void makeJoint(b2World* m_world,b2Body* a, b2Body* b ){
 			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = a;
@@ -76,6 +85,9 @@ namespace cs296
 			jointDef.localAnchorB.Set(0.0f,0.0f);
 			m_world->CreateJoint(&jointDef);
 	}
+	
+	
+	//a function for creating a box with the required parameters
 	b2Body* drawBox(b2World* m_world,float xC,float yC,float lby2,float bby2,bool isDynamic=false,float angle=0,float density=0){
 			b2PolygonShape shape;
 			shape.SetAsBox(lby2, bby2);
@@ -92,11 +104,13 @@ namespace cs296
 
 
 	}
+	//function for drawing an arc
 	void drawArc(b2World* m_world,float xC,float yC,float r,float sA,float eA,int numP){
 		b2Vec2 vs[numP];
 		getArcVec(xC,yC,r,sA,eA,vs,numP);
 		drawChain(m_world,vs,numP);
 	}
+	//function for drawing a sphere with xC and Yc as centre and r as radius with density friction and restitution as a,b,c respectively
 	b2Body* drawSphere(b2World* m_world,float xC,float yC,float r,float a,float b, float c){
 
 		b2Body* spherebody;			
@@ -116,6 +130,8 @@ namespace cs296
 		spherebody->CreateFixture(&ballfd);
 		return spherebody;
 	}
+	
+	//function for creating a platform
 	void drawPlatform(b2World* m_world,b2Vec2 a,b2Vec2 b)
 	{		
 		b2Body* platform;
@@ -576,11 +592,13 @@ namespace cs296
 		}
 		/// <B> The box and its platform which the stick hits </B>
 		{
+			/// drawing the platform 
 			drawPlatform(m_world,b2Vec2(-6.5f,21.5f), b2Vec2(-4.5f,21.5f));
 
 
 			////////////////////////////
 
+    ///the box body definition and its fixture
 			b2BodyDef bd1;
 			bd1.type = b2_dynamicBody;
 			bd1.position.Set(-5.5f,22.2f);
@@ -596,14 +614,20 @@ namespace cs296
 
 		}
 
-		//The pulley system
+		///<B> The pulley system </B>
 		{
+		
+		///<B> the open box into which a block falls from the left , which in turn activates the pulley system
+		
+	  ///bodydef for the open box
 			b2BodyDef *bd = new b2BodyDef;
 			bd->type = b2_dynamicBody;
 			bd->position.Set(-2,19);
 			bd->fixedRotation = true;
 
-			//The open box
+		///the open box has three fixtures defined below
+		
+		///fd1 is the horizontal fixture of the open box
 			b2FixtureDef *fd1 = new b2FixtureDef;
 			fd1->density = 8.0;
 			fd1->friction = 0.5;
@@ -612,7 +636,11 @@ namespace cs296
 			b2PolygonShape bs1;
 			bs1.SetAsBox(1.5,0.2, b2Vec2(0.f,-1.4f), 0);
 			fd1->shape = &bs1;
+
+
+			///fd2 is the left vertical part of the open box
 			b2FixtureDef *fd2 = new b2FixtureDef;
+
 			fd2->density = 8.0;
 			fd2->friction = 0.5;
 			fd2->restitution = 0.f;
@@ -620,6 +648,8 @@ namespace cs296
 			b2PolygonShape bs2;
 			bs2.SetAsBox(0.2,1.5, b2Vec2(1.5f,0.f), 0);
 			fd2->shape = &bs2;
+
+			///fd3 is the right vertical part of the open box
 			b2FixtureDef *fd3 = new b2FixtureDef;
 			fd3->density = 8.0;
 			fd3->friction = 0.5;
@@ -628,17 +658,21 @@ namespace cs296
 			b2PolygonShape bs3;
 			bs3.SetAsBox(0.2,1.5, b2Vec2(-1.5f,0.f), 0);
 			fd3->shape = &bs3;
-
+  ///the three fixtures are made to the body to create the open box
 			b2Body* box1 = m_world->CreateBody(bd);
 			box1->CreateFixture(fd1);
 			box1->CreateFixture(fd2);
 			box1->CreateFixture(fd3);
 
-			//The bar
+			///The bar connected to the open box through the pulley
+			
+			///body definition for the bar
 			b2BodyDef *heavy = new b2BodyDef;
 			heavy->type = b2_dynamicBody;
 			heavy->position.Set(20,33);
 			heavy->fixedRotation = true;
+			
+			///fd4 is the fixture for the bar having a box shape of length 10 and height 0.4 with density 7.2
 			b2FixtureDef *fd4 = new b2FixtureDef;
 			b2PolygonShape bs4;
 			bs4.SetAsBox(5.0,0.2);
@@ -646,6 +680,8 @@ namespace cs296
 			fd4->friction = 1.0;
 			fd4->density = 7.20;	  
 			b2Body* box2 = m_world->CreateBody(heavy);
+			
+			///creating the fixture
 			box2->CreateFixture(fd4);
 
 			/*//support
@@ -659,20 +695,29 @@ namespace cs296
 			  platform->CreateFixture(&chain, 0.0f);
 			 */
 
-			// The pulley joint
+			/// The pulley joint
+			
+			///the pulley is anchored at 4 points, box1 (the open box), box2 (the bar), and two other points which are positioned appropriately
 			b2PulleyJointDef* myjoint = new b2PulleyJointDef();
-			b2Vec2 worldAnchorOnBody1(-2, 19); // Anchor point on body 1 in world axis
-			b2Vec2 worldAnchorOnBody2(20, 33); // Anchor point on body 2 in world axis
-			b2Vec2 worldAnchorGround1(-2, 35); // Anchor point for ground 1 in world axis
-			b2Vec2 worldAnchorGround2(20, 35); // Anchor point for ground 2 in world axis
+			b2Vec2 worldAnchorOnBody1(-2, 19); /// Anchor point on body 1 in world axis (open box)
+			b2Vec2 worldAnchorOnBody2(20, 33); /// Anchor point on body 2 in world axis (the bar)
+			b2Vec2 worldAnchorGround1(-2, 35); /// Anchor point for ground 1 in world axis(left anchor point)
+			b2Vec2 worldAnchorGround2(20, 35); /// Anchor point for ground 2 in world axis (right anchor point)
 			float32 ratio = 1.0f; // Define ratio
+			///initialisation of the pulley joint defined above
 			myjoint->Initialize(box1, box2, worldAnchorGround1, worldAnchorGround2, box1->GetWorldCenter(), box2->GetWorldCenter(), ratio);
+      ///creating the joint
 			m_world->CreateJoint(myjoint);
 
 		}	
-		//Smiley
+		/// <B> Smiley </B>
 		{	
 
+/// <B> the upward part of the pulley excluding the chain (those which are in sets of two) </B>
+
+
+
+  ///fixture for the planks which are pivoted at the centre that are in contact with the bar from the pulley system
 			b2PolygonShape shape1;
 			shape1.SetAsBox(0.2f, 2.6f, b2Vec2(0.0f,0.0f),0);  		
 			b2FixtureDef *fd = new b2FixtureDef;
@@ -680,13 +725,16 @@ namespace cs296
 			fd->friction = 1.0;
 			fd->restitution = 0.6f;
 			fd->shape = &shape1;
-
+/// defining the shape to create the platform on which the spheres stay
 			b2PolygonShape shape2;
 			shape2.SetAsBox(0.2f, 0.2f, b2Vec2(0.0f,0.0f),0);
 
 			b2RevoluteJointDef jointDef;
+/// <B> creating two set of bodies, one is closely a mirror image of the other </B>
 
 
+
+///the distance between the set of bodies is set to 8 (facilitated by the statement at the starting of for loop)
 			for(int i=0;i<2;i++)		
 			{
 				int xAxis=16+8*i;
@@ -697,6 +745,10 @@ namespace cs296
 				else{
 					dir=1;
 				}
+///the two planks which are pivoted at he middle and connected to the pulley system (which when moved release the chain they are holding jointly)
+
+      /// bd is the plank
+      /// fd is the fixture for the plank, it has box shape with length 0.4 and height 5.2 
 				b2BodyDef bd;
 				bd.type = b2_dynamicBody;
 				bd.position.Set(xAxis,31);
@@ -704,25 +756,37 @@ namespace cs296
 				b2Body* plank = m_world->CreateBody(&bd);
 				plank->CreateFixture(fd);   			
 
+///bd1 is the bodydef for the pivot , and it is positioned appropriately
 				b2BodyDef bd1;
 				bd1.position.Set(xAxis,31);
 				b2Body* pivot = m_world->CreateBody(&bd1);
 				pivot->CreateFixture(&shape2,0.0f);			
 
 				//jointDef.collideConnected = false;
+			///a joint is defined to connect the plank and the pivot , the local anchors are set at the corresponding centres
 				jointDef.bodyA = plank;
 				jointDef.bodyB = pivot;
 				jointDef.localAnchorA.Set(0.0f,0.0f);
 				jointDef.localAnchorB.Set(0.0f,0.0f);
 				m_world->CreateJoint(&jointDef);  
 
+				///platform on which the spheres stay (using the function drawplatform) the distance between the two platforms is 8 (xAxis is 16 and 24 in the two iterations of the for loop) 
 				drawPlatform(m_world,b2Vec2(xAxis-1,28.1f),b2Vec2(xAxis+1,28.1f));
-
+        
+        
+        /// the spheres of radius 0.6 which fall off the platform to complete the eyes of the pulley
+        ///the distance between the spheres is 8 as xAxis is 16 and 24 in the first and second iteration
 				drawSphere(m_world,xAxis,28.4f,0.6f,0.3f,0.0f,0.0f);	
+        
+        
+        //arcs on which the spheres fall , they are positioned at a distance of 8 from each other, xAxis being 16 and 24 in the two iterations
+        drawArc(m_world,xAxis,23,1,PI/2,(3/2.0)*PI,30);
 
-				drawArc(m_world,xAxis,23,1,PI/2,(3/2.0)*PI,30);
 
+///the funnel like bodies which facilitate the spheres to fall onto the arcs made above 
 				{
+				
+				///the left part of the funnel which has an arc at the top and a straight line at the bottom is drawn as a chain using 7 points whose coordinates are defined below . the direction variable is 1 and -1 respectively in the two iterations
 					b2Vec2 vs[15];
 					vs[0].Set(xAxis + dir*(3),29.1f);
 					vs[1].Set(xAxis + dir*(2),27.1f);
@@ -731,10 +795,11 @@ namespace cs296
 					vs[4].Set(xAxis + dir*(1.55),26.8f);
 					vs[5].Set(xAxis + dir*(1.40),26.7f);
 					vs[6].Set(xAxis + dir*(1.40),25.5f);
+				///	the right part is a vertical line , drawn as a chain with 2 points , whose coordinates are defined below
 					drawChain(m_world,vs,7);
 					vs[0].Set(xAxis - dir*(0.7),27.0f);
 					vs[1].Set(xAxis - dir*(0.7),25.5f);
-					drawChain(m_world,vs,2);
+					drawChain(m_world,vs,2); 
 
 				}
 
@@ -746,20 +811,37 @@ namespace cs296
 
 
 		{
+
+
+///<B>the dynamic type chain like body which falls off the planks to complete the lips of the smiley<B>
+
 			const int num=6;
+///the body has 6 fixtures, each being of polygon shape , with 4 vertices , the upper vertices of all fixtures lie on an arc and lower vertices all lie on a different arc
+
+///the position of vertices for these fixtures is done below
+
+///the arc to get points to position the upper vertices , using the getArcVec function
 			b2Vec2 vs1[num];
 			getArcVec(20,29.8+(2.85/tan(PI/12.0)),2.85/sin(PI/12),11*PI/12,13*PI/12,vs1,num);
+			
+	///the arc for the lower vertices		
 			b2Vec2 vs2[num];
 			getArcVec(20,30.2+(2.85/tan(PI/12.0)),2.85/sin(PI/12),13*PI/12,11*PI/12,vs2,num);
+			
+	///these points are all filled into a new b2vec vs with size 2*num		
 			b2Vec2 vs[2*num];
 			for(int i=0;i<num;i++)
 				vs[i]=vs1[i];
 			for(int i=num;i<2*num;i++)
 				vs[i]=vs2[i-num];
+			
+		///	bd is the body def for the part of the lips
 			b2BodyDef bd;
 			bd.type = b2_dynamicBody;
 			bd.position.Set(0.0f,0.0f);
 			b2Body* body = m_world->CreateBody(&bd);
+			
+			///six fixtures are created for the body in the for loop below , each fixture is polygon shape with upper two vertices lying on one arc and the lower two vertices lying an a different arc of bigger radius
 			for(int i=0;i<num-1;i++){
 				b2PolygonShape shape;
 				b2Vec2 a[num]={vs[2*num-i-1],vs[2*num-i-2],vs[i+1],vs[i]};
@@ -779,7 +861,10 @@ namespace cs296
 
 		}
 
-		//Lips
+		///Lips
+		
+		
+		///the part of the lips which are static are created using the drawArc function with radius 2.85/sin(PI/12)
 		{	
 			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),9*PI/12,11*PI/12+0.01,10);
 			drawArc(m_world,20,16+(2.85/tan(PI/12)),2.85/sin(PI/12),13*PI/12-0.01,15*PI/12+0.01,10);
