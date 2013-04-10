@@ -83,7 +83,8 @@ We would like to point out some parts of our simulation design that make it inte
 \end{itemize}
 
 
-\section{Analysis of plots ~\cite{matplotlib} }
+\section{Analysis of plots} 
+~\cite{matplotlib} 
 \subsection{Analysis of plot01(image below) : [Average (StepTime and LoopTime over reruns) vs number of iterations]}
 \begin{itemize}
 \item The stepTime and looptime are very close to each other. This is meaningful because the only major process that is happening inside the loop is Step function and apart from the step function, only a few addition, subtraction and reading is happening.
@@ -153,7 +154,8 @@ There is a marked difference in the time taken by code in the release and debug 
 The size of the executable in debug-mode is 1.4M, while in release-mode it is just 690K. 
 
 
-\section{Call Graphs ~\cite{Gprof2Dot}}
+\section{Call Graphs }
+~\cite{Gprof2Dot}
 The callgraphs for debug and release mode respectively :
 \newline
 \includegraphics[width=20cm, height=3cm]{doc/debug.png}

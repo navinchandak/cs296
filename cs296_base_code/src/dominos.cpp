@@ -42,8 +42,16 @@ namespace cs296
 {
 #define PI 3.14159265
 
-/**a function which helps in drawing an arc, givng it's radius , centre, and the angle made at the centre by the arc
-	numP being the no of points and vs being the vector to which points on the arc are set.
+///a function which helps in drawing an arc, givng it's radius , centre, and the angle made at the centre by the arc
+///numP being the no of points and vs being the vector to which points on the arc are set.
+/*!
+\param xC x-axis of center of the arc
+\param yC y-axis of the center of arc
+\param r radius of arc
+\param sA starting angle 
+\param eA ending angle
+\param vs the array in which the arc points will be returned
+\param numP number of points in the arc
 */
 	void dominos_t::getArcVec(float xC,float yC,float r,float sA,float eA,b2Vec2* vs,int numP){
 		/// a for loop which calculates the points in an arc, using the standard formula for the points in a circle
@@ -57,7 +65,11 @@ namespace cs296
 
 	}
 	
-	/// a function for drawing a chain passing through points specified by vs and numP being no of points
+	//! Function for drawing a chain passing through points specified by vs and numP being no of points
+	/*!
+	\param vs an array
+	\param numP the number of points
+	*/
 	void dominos_t::drawChain(b2Vec2* vs,int numP){
 		///create a b2BodyDef and initialize the body with the b2BodyDef
 		b2BodyDef bd;
@@ -70,10 +82,12 @@ namespace cs296
 
 	}
 	
-	/** a function for creating a box (both dynamic and static at the desired position)
-	\param xc the x center of the box
-	\param yx 
-
+	//! Function for creating a box (both dynamic and static at the desired position)
+	/*!
+	\param xC the x center of the box
+	\param yC the y center of the box 
+	\param fixture pointer to the fixture definition
+	\param isDynamic whether the body is static or dynamic.
 	\return the final body 
 	*/
 	b2Body* dominos_t::drawBox(float xC,float yC,b2FixtureDef* fixture, bool isDynamic=false){
@@ -87,7 +101,11 @@ namespace cs296
 			return ground;
 	}
 	
-	//a function which makes a joint between two given bodies a,b
+	//! Function which makes a revolute joint between the two given bodies a,b
+	/*!
+	\param a First body
+	\param b Second body
+	*/
 	void dominos_t::makeJoint(b2Body* a, b2Body* b ){
 			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = a;
@@ -98,7 +116,16 @@ namespace cs296
 	}
 	
 	
-	//a function for creating a box with the required parameters
+	//! Function for creating a box with the required parameters
+	/*!
+	\param xC the x center of the box
+	\param yC the y center of the box
+	\param lby2 length of the box divided by 2
+	\param bby2 breadth of the box divided by 2
+	\param isDynamic whether the body is dynamic or static
+	\param angle the angle w.r.t the horizontal at which the object is present.
+	\param density the density of the object.
+	*/
 	b2Body* dominos_t::drawBox(float xC,float yC,float lby2,float bby2,bool isDynamic=false,float angle=0,float density=0){
 			b2PolygonShape shape;
 			shape.SetAsBox(lby2, bby2);
@@ -112,16 +139,34 @@ namespace cs296
 			b2Body* ground = m_world->CreateBody(&bd);
 			ground->CreateFixture(&shape, 0.0f);
 			return ground;
-
-
 	}
-	//function for drawing an arc
+	
+	
+	//! Function for drawing a circular arc
+	/*!
+	\param xC the x center of the circle
+	\param yC the y center of the circle
+	\param r the radius of the the arc 
+	\param sA starting angle
+	\param eA end angle
+	\param numP number of points in the arc
+	*/
 	void dominos_t::drawArc(float xC,float yC,float r,float sA,float eA,int numP){
 		b2Vec2 vs[numP];
 		getArcVec(xC,yC,r,sA,eA,vs,numP);
 		drawChain(vs,numP);
 	}
-	//function for drawing a sphere with xC and Yc as centre and r as radius with density friction and restitution as a,b,c respectively
+	
+	
+	//! Function for drawing a rigid sphere
+	/*!
+	\param xC the x center of the sphere
+	\param yC the y center of the sphere
+	\param r the radius of the sphere
+	\param a the density of the sphere
+	\param b the friction of the sphere
+	\param c the restitution of the sphere
+	*/
 	b2Body* dominos_t::drawSphere(float xC,float yC,float r,float a,float b, float c){
 	
 		b2Body* spherebody;			
@@ -142,7 +187,11 @@ namespace cs296
 		return spherebody;
 	}
 	
-	//function for creating a platform
+	//! Function for creating a straight platform by providing the two end points
+	/*!
+	\param a one end point of the platform
+	\param b another end point of the platform
+	*/
 	void dominos_t::drawPlatform(b2Vec2 a,b2Vec2 b)
 	{		
 		b2Body* platform;
@@ -152,7 +201,7 @@ namespace cs296
 		platform = m_world->CreateBody(&bd);
 		platform->CreateFixture(&shape, 0.0f);
 	}
-
+	//! Function which defines all the objects of the simulation
 	dominos_t::dominos_t()
 	{	/**<B> Ground </B>
 			The following generates the ground object. 

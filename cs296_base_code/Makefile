@@ -123,6 +123,7 @@ report:
 	@pdflatex $(DOCDIR)/itslatex.tex
 	@mv itslatex.pdf $(DOCDIR)/g05_report.pdf 
 	@$(RM) itslatex.* 
+	@rm -rf *.log
 	@python3 ./scripts/g05_gen_html.py
 
 clean:
